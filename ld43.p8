@@ -19,6 +19,9 @@ config = {
 function new_game()
     score = 0
     particles = {}
+    selectcolor = 0
+    selectcolorscreen = false
+    color = {1, 2, 3}
     player = new_player(16, 80)
     tomatoes = {
         new_tomato(48, -20),
@@ -56,10 +59,11 @@ end
 function new_tomato(x, y)
     local e = new_entity(x, y)
     e.spd = 0.5
-    e.spr = 20 + flr(rnd(4))
     e.ssize = 1
     e.pcolors = { 2, 8 }
     e.plan = { call = false }
+    e.color = flr(rnd(4))
+    e.spr = 20 + e.color
     return e
 end
 
@@ -297,7 +301,18 @@ end
 
 function update_player()
     if player.dead then return end
-    update_entity(player, btn(0), btn(1), jump(), btn(3))
+
+    if not btn(4) then
+        update_entity(player, btn(0), btn(1), jump(), btn(3))
+        selectcolorscreen = false
+    elseif btnp(4) and state == "play" then
+        selectcolorscreen = true
+        if btnp(0) and state == "play" and selectcolor > 1 then
+            selectcolor -= 1
+        elseif btnp(1) and state == "play" and selectcolor < #color then
+            selectcolor += 1
+        end
+    end
 
     -- calling and stop calling
     foreach(tomatoes, function(t)
@@ -560,6 +575,24 @@ end
 
 function draw_ui()
     csprint(tostr(flr(score).."     "), 2, 9, 13)
+    if selectcolorscreen then
+        for i = 1, #color do
+            local p = player.x - (#color-1)*5 + (i-1)*10
+            rect((p - 3), player.y - 17, (p + 3), player.y - 11, 6)
+            rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, 8)
+        end
+        --if levelsaved > 0 then
+            --rect(64 - (levelsaved - 1)*10 + (selectlevel - 1)*20 - 3, 80-3, 64 - (levelsaved - 1)*10 + (selectlevel - 1)*20 + 5, 80+7, 14)
+        
+            --for i = 1,3 do
+            --local colr = 5
+                --if i <= dget(selectlevel) then
+                    --colr = 10
+                --end
+            --cosprint("★ ", 64 - 23 + (i - 1)*20, 60, 6, colr) 
+            --end
+        --end
+    end
 end
 
 function draw_entity(e)
