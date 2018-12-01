@@ -88,7 +88,6 @@ function new_entity(x, y)
         ladder = false,
         jumped = false,
         jump = 0, fall = 0,
-        shots = {},
         cooldown = 0,
     }
 end
@@ -645,19 +644,6 @@ end
 
 function draw_ui()
     csprint(tostr(flr(score).."     "), 2, 9, 13)
-    if selectcolorscreen then
-        local player = world.player
-        for i = 1, #color do
-            local p = mid(64 - 200/#color, player.x, 64 + 200/#color) - (#color-1)*5 + (i-1)*10
-            local palette = g_palette[color[i]]
-            rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, palette[2])
-            if i == 1 then
-                line((p - 2), player.y - 16, (p + 2), player.y - 12, 7)
-                line((p + 2), player.y - 16, (p - 2), player.y - 12, 7)
-            end
-        end
-            rect((mid(64 - 200/#color, player.x, 64 + 200/#color) - (#color-1)*5 + (selectcolor-1)*10 - 3), player.y - 17, (mid(64 - 200/#color, player.x, 64 + 200/#color) - (#color-1)*5 + (selectcolor-1)*10 + 3), player.y - 11, 6)
-    end
     if selectcolor > 1 then
         local palette = g_palette[color[selectcolor]]
         rectfill(6, 3, 16, 13, palette[2])
@@ -677,10 +663,21 @@ function draw_entity(e)
 end
 
 function draw_player()
-    foreach (world.player.shots, function(s)
-        line(s.x0, s.y0, s.x1, s.y1, s.color)
-    end)
-    draw_entity(world.player)
+    local player = world.player
+    draw_entity(player)
+    if selectcolorscreen then
+        for i = 1, #color do
+            local p = mid(world.x * 8 + 64 - 200/#color, player.x, (world.x + world.w) * 8 - 64 + 200/#color) - (#color-1)*5 + (i-1)*10
+            local palette = g_palette[color[i]]
+            rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, palette[2])
+            if i == 1 then
+                line((p - 2), player.y - 16, (p + 2), player.y - 12, 7)
+                line((p + 2), player.y - 16, (p - 2), player.y - 12, 7)
+            end
+        end
+        local p = mid(world.x * 8 + 64 - 200/#color, player.x, (world.x + world.w) * 8 - 64 + 200/#color) - (#color-1)*5 + (selectcolor-1)*10
+        rect((p - 3), player.y - 17, (p + 3), player.y - 11, 6)
+    end
 end
 
 function draw_particles()
