@@ -146,7 +146,7 @@ end
 --
 
 function _init()
-    cartdata("joe_pickle")
+    cartdata("ld43_escargames")
     music(7, 8000)
     state = "menu"
     particles = {}
