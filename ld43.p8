@@ -299,10 +299,12 @@ function update_player()
     if player.dead then return end
     update_entity(player, btn(0), btn(1), jump(), btn(3))
 
-    -- calling
+    -- calling and stop calling
     foreach(tomatoes, function(t)
-        if btn(4) and state == "play" then
+        if btnp(4) and state == "play" and t.plan.call == false then
             t.plan.call = true
+        elseif btnp(4) and state == "play" and t.plan.call == true then
+            t.plan.call = false
         end
     end)
 end
@@ -311,15 +313,18 @@ function update_tomatoes()
     foreach(tomatoes, function(t)
         local old_x, old_y = t.x, t.y
         update_entity(t, t.plan[0], t.plan[1], t.plan[2], t.plan[3])
-
         -- update move plan if necessary
-        if t.plan.call == true then -- go left or right
-            if t.x < player.x then 
+        if t.plan.call == true then -- go left or right 
+            if t.x < player.x + 1 then 
                 t.plan[0] = false
                 t.plan[1] = true 
-            elseif t.x > player.x then
+            elseif t.x > player.x - 1 then
                 t.plan[1] = false
                 t.plan[0] = true
+            end
+        else 
+            for i = 0, 3 do
+                t.plan[i] = false
             end
         end
     end)
