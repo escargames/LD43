@@ -12,24 +12,13 @@ config = {
     pause = {tl = "pause"},
 }
 
-g_lives_player_start = 5
-g_lives_player_max = 10
-g_lives_tomato = 10
-g_fish_ammo = 20
-g_points_kill = 10
-
 --
 -- constructors
 --
 
 function new_game()
     score = 0
-    fish = 0
-    lives_x1 = 76
-    hidefish = {}
-    hidemeat = {}
     particles = {}
-    fishes, meat = {}, {}
     player = new_player(16, 80)
     tomatoes = {
         new_tomato(48, -20),
@@ -57,7 +46,6 @@ end
 
 function new_player(x, y)
     local e = new_entity(x, y)
-    e.lives = g_lives_player_start
     e.spd = 1.0
     e.spr = 18
     e.ssize = 2
@@ -67,7 +55,6 @@ end
 
 function new_tomato(x, y)
     local e = new_entity(x, y)
-    e.lives = g_lives_tomato
     e.spd = 0.5
     e.spr = 20 + flr(rnd(4))
     e.ssize = 1
@@ -495,14 +482,6 @@ end
 --
 
 function update_pause()
-    if fish > 0 then
-        if fish % 10 == 0 then
-            score += 1
-        end
-        fish -= 1
-        return
-    end
-
     if btn(4) then
         keep_score(score)
         state = "menu"
@@ -560,8 +539,6 @@ function draw_menu()
         csprint("game     ", 32, 12, 9)
         csprint("     over", 32, 12, 11)
         csprint("score "..tostr(score), 80, 9, 13)
-        cosprint(tostr(fish), 68, 60, 6, 9)
-        spr(25, 54, 58)
 
         camera(0, 14*8)
         draw_particles()
@@ -578,13 +555,6 @@ end
 
 function draw_ui()
     csprint(tostr(flr(score).."     "), 2, 9, 13)
-    cosprint(tostr(fish), 19, 4, 6, 9)
-    spr(25, 7, 3)
-    palt(0, false)
-    orectfill(80, 4, 120, 8, 1, 0)
-    orectfill(80, 4, lives_x1, 8, 8, 0)
-    palt(0, true)
-    spr(24, 68, 2)
 end
 
 function draw_entity(e)
