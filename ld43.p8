@@ -369,13 +369,19 @@ function update_tomatoes()
         local old_x, old_y = t.x, t.y
         update_entity(t, t.plan[0], t.plan[1], t.plan[2], t.plan[3])
         -- update move plan if necessary
-        if world.player.call == t.color and not selectcolorscreen then -- go left or right 
+        if world.player.call == t.color and not selectcolorscreen then -- go left or right or up or down
             if t.x < world.player.x + 1 then 
                 t.plan[0] = false
                 t.plan[1] = true 
             elseif t.x > world.player.x - 1 then
                 t.plan[1] = false
                 t.plan[0] = true
+            elseif t.y < world.player.y + 1 then
+                tplan[3] = true
+                tplan[2] = false
+            elseif t.y > world.player.y - 1 then
+                tplan[2] = true
+                tplan[3] = false
             end
         else 
             for i = 0, 3 do
@@ -387,6 +393,7 @@ function update_tomatoes()
            abs(t.x - world.exit.x) < 2 and
            abs(t.y - world.exit.y) < 2 then
             saved += 1
+            numbercats[t.color] -= 1
             del(world.tomatoes, t)
         end
         -- did we die in spikes or some other trap?
@@ -397,6 +404,7 @@ function update_tomatoes()
                     s.fill += 1
                 end
             end)
+            numbercats[t.color] -= 1
             del(world.tomatoes, t)
         end
     end)
