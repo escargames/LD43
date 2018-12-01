@@ -32,14 +32,14 @@ function new_game()
     selectcolor = 0
     selectcolorscreen = false
     color = {1, 2, 3}
-    player = new_player(16, 80)
-    tomatoes = {
-        new_tomato(48, -20),
-        new_tomato(60, -20),
-        new_tomato(96, -30),
-        new_tomato(56, -40),
+    world = {
+        player = new_player(16, 80),
+        tomatoes = {}
     }
-    world = {}
+    -- spawn tomatoes (needs to be improved)
+    for i=1,32 do
+        add(world.tomatoes, new_tomato(crnd(32, 96), crnd(-20,-50)))
+    end
     -- analyse level to find where the exit is
     for y=0,15 do
         for x=0,15 do
@@ -168,7 +168,10 @@ function _init()
     music(7, 8000)
     state = "menu"
     particles = {}
-    player = new_player(64, 150)
+    world = {
+        player = new_player(64, 150),
+        tomatoes = {}
+    }
     menu = {
         doordw = 128,
         doorx = 0,
@@ -180,7 +183,6 @@ function _init()
         scores = false,
         high_y = 78
     }
-
     jump_speed = 1
     fall_speed = 1
 end
@@ -319,10 +321,10 @@ function update_particles()
 end
 
 function update_player()
-    if player.dead then return end
+    if world.player.dead then return end
 
     if not btn(4) then
-        update_entity(player, btn(0), btn(1), jump(), btn(3))
+        update_entity(world.player, btn(0), btn(1), jump(), btn(3))
         selectcolorscreen = false
     elseif btnp(4) and state == "play" then
         selectcolorscreen = true
@@ -334,7 +336,7 @@ function update_player()
     end
 
     -- calling and stop calling
-    foreach(tomatoes, function(t)
+    foreach(world.tomatoes, function(t)
         if btnp(4) and state == "play" and t.plan.call == false then
             t.plan.call = true
         elseif btnp(4) and state == "play" and t.plan.call == true then
@@ -344,15 +346,15 @@ function update_player()
 end
 
 function update_tomatoes()
-    foreach(tomatoes, function(t)
+    foreach(world.tomatoes, function(t)
         local old_x, old_y = t.x, t.y
         update_entity(t, t.plan[0], t.plan[1], t.plan[2], t.plan[3])
         -- update move plan if necessary
         if t.plan.call == true then -- go left or right 
-            if t.x < player.x + 1 then 
+            if t.x < world.player.x + 1 then 
                 t.plan[0] = false
                 t.plan[1] = true 
-            elseif t.x > player.x - 1 then
+            elseif t.x > world.player.x - 1 then
                 t.plan[1] = false
                 t.plan[0] = true
             end
@@ -365,7 +367,7 @@ function update_tomatoes()
         if abs(t.x - world.exit.x) < 2 and
            abs(t.y - world.exit.y) < 2 then
             saved += 1
-            del(tomatoes, t)
+            del(world.tomatoes, t)
         end
     end)
 end
@@ -411,7 +413,7 @@ function update_entity(e, go_left, go_right, go_up, go_down)
         -- up/jump button
         if ladder then
             move_y(e, -e.climbspd)
-            ladder_middle()
+            ladder_middle(e)
         elseif grounded and not e.jumped then
             e.jump = 20
             e.jumped = true
@@ -423,7 +425,7 @@ function update_entity(e, go_left, go_right, go_up, go_down)
         -- down button
         if ladder or ladder_below then
             move_y(e, e.climbspd)
-            ladder_middle()
+            ladder_middle(e)
         end
     end
 
@@ -457,7 +459,7 @@ function update_entity(e, go_left, go_right, go_up, go_down)
     e.grounded = grounded
     e.ladder = ladder
 
-    if old_x != e.x or old_y != e.y then
+    if (old_x != e.x or old_y != e.y) and rnd() > 0.8 then
         add(particles, { x = e.x + (rnd(6) - 3) - rnd(2) * (e.x - old_x),
                          y = e.y + rnd(2) + 2 - rnd(2) * (e.y - old_y),
                          age = 20 + rnd(5), color = e.pcolors,
@@ -513,12 +515,12 @@ function ladder_area(x,y,w,h)
            ladder(x-w,y-1+h) or ladder(x-1+w,y-1+h)
 end
 
-function ladder_middle()
-    local ladder_x = flr(player.x / 8) * 8
-    if player.x < ladder_x + 4 then
-        move_x(player, 1)
-    elseif player.x > ladder_x + 4 then
-        move_x(player, -1)
+function ladder_middle(e)
+    local ladder_x = flr(e.x / 8) * 8
+    if e.x < ladder_x + 4 then
+        move_x(e, 1)
+    elseif e.x > ladder_x + 4 then
+        move_x(e, -1)
     end
 end
 
@@ -530,7 +532,9 @@ function update_pause()
     if btn(4) then
         keep_score(score)
         state = "menu"
-        player = new_player(64, 150)
+        world = {
+            player = new_player(64, 150)
+        }
         sfx(g_sfx_menu)
         music(-0, 5000)
         music(7, 8000)
@@ -602,9 +606,9 @@ function draw_ui()
     csprint(tostr(flr(score).."     "), 2, 9, 13)
     if selectcolorscreen then
         for i = 1, #color do
-            local p = player.x - (#color-1)*5 + (i-1)*10
-            rect((p - 3), player.y - 17, (p + 3), player.y - 11, 6)
-            rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, 8)
+            local p = world.player.x - (#color-1)*5 + (i-1)*10
+            rect((p - 3), world.player.y - 17, (p + 3), world.player.y - 11, 6)
+            rectfill((p - 2), world.player.y - 16, (p + 2), world.player.y - 12, 8)
         end
         --if levelsaved > 0 then
             --rect(64 - (levelsaved - 1)*10 + (selectlevel - 1)*20 - 3, 80-3, 64 - (levelsaved - 1)*10 + (selectlevel - 1)*20 + 5, 80+7, 14)
@@ -631,10 +635,10 @@ function draw_entity(e)
 end
 
 function draw_player()
-    foreach (player.shots, function(s)
+    foreach (world.player.shots, function(s)
         line(s.x0, s.y0, s.x1, s.y1, s.color)
     end)
-    draw_entity(player)
+    draw_entity(world.player)
 end
 
 function draw_particles()
@@ -645,10 +649,11 @@ function draw_particles()
 end
 
 function draw_tomatoes()
-    foreach(tomatoes, draw_entity)
+    foreach(world.tomatoes, draw_entity)
 end
 
 function draw_debug()
+    local player = world.player
     print("player.xy "..player.x.." "..player.y, 5, 118, 6)
     print("jump "..player.jump.."  fall "..player.fall, 5, 111, 6)
     print("grounded "..(player.grounded and 1 or 0).."  ladder "..(player.ladder and 1 or 0), 5, 104, 6)
