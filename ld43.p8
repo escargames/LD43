@@ -612,9 +612,9 @@ function draw_menu()
             if not menu.scores then
                 corectfill(menu.rect_y0, menu.rect_y1, 35, 6, 0)
                 csprint("ld43     ", 32, 12, 11)
-                csprint("     game", 32, 12, 9)
-                csprint("play", 60, 9, 13)
-                csprint("high", 78, 9, 13)
+                csprint("     game", 32, 12, 15)
+                csprint("play", 60, 9, 9)
+                csprint("high", 78, 9, 9)
             else
                 csprint("high", menu.high_y, 9, 13)
                 csprint("1 ...... "..dget(1), 45, 6, 13)
