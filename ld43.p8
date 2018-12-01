@@ -17,7 +17,6 @@ g_lives_player_max = 10
 g_lives_tomato = 10
 g_fish_ammo = 20
 g_points_kill = 10
-g_spawn_cooldown = 10
 
 --
 -- constructors
@@ -39,9 +38,6 @@ function new_game()
         new_tomato(48, -20),
         new_tomato(96, -10),
     }
-    spawn_cooldown = g_spawn_cooldown,
-    collectibles(fishes, 48)
-    collectibles(meat, 49)
 end
 
 function new_entity(x, y)
@@ -193,10 +189,7 @@ function _update60()
         update_particles()
         update_player()
         update_tomatoes()
-        collect_fish()
-        collect_meat()
         update_smoke()
-        lives_handling()
     elseif state == "pause" then
         update_pause()
         update_particles()
@@ -214,8 +207,6 @@ function _draw()
         draw_background()
         draw_smoke()
         draw_world()
-        draw_collectible(fishes, 25)
-        draw_collectible(meat, 24)
         draw_particles()
         draw_tomatoes()
         draw_player()
@@ -329,84 +320,22 @@ function update_player()
     if player.dead then return end
     update_entity(player, btn(0), btn(1), jump(), btn(3))
 
-    -- eating spam?
-    player.spam = spam(player.x, player.y)
-    if player.spam then
-        if player.anim % 16 < 1 then
-            score += 1
-            sfx(17)
-        end
-    end
-
     -- shooting!
     if btn(4) and state == "play" then
-        if player.cooldown > 0 then
-            player.cooldown -= 1
-        elseif #player.shots < 10 and fish > 0 then
-            local x = player.x + rnd(8) - 4
-            local y = player.y + rnd(4) - 3
-            add(player.shots, { x0 = x, y0 = y, x1 = x, y1 = y,
-                                exploded = false,
-                                dx = (rnd(2) + 3) * (player.dir and -1 or 1),
-                                color = rnd() > 0.7 and 9 or 10 })
-            sfx(12)
-            fish -= 1
-            player.cooldown = 2
-        end
-    end
-
-    -- death
-    if player.lives == 0 then
-        for i = 0,20 do
-            add(particles, { x = player.x + rnd(8) - 4,
-                             y = player.y + rnd(8) - 8,
-                             age = 20 + rnd(5),
-                             color = { 0, 5, 3, 11 },
-                             r = { 3, 5, 7 } })
-        end
-        sfx(18)
-        player.dead = true
-        player.cooldown = 60
     end
 end
 
 function update_tomatoes()
-    spawn_cooldown -= 1 / 60
-    if spawn_cooldown < 0 then
-        add(tomatoes, new_tomato(64, -20))
-        spawn_cooldown = g_spawn_cooldown
-    end
-
     foreach(tomatoes, function(t)
         local old_x, old_y = t.x, t.y
         update_entity(t, t.plan[0], t.plan[1], t.plan[2], t.plan[3])
-        -- check collision with player
-        if abs(t.x - player.x) <= 6 and abs(t.y - player.y) <= 8 then
-            if player.hit == 0 then
-                player.lives -= 1
-                player.hit = 10
-                sfx(19)
-            end
-        end
+
         -- update move plan if necessary
         t.plan.time -= 1
         if t.plan.time <= 0 or (old_x == t.x and old_y == t.y) then
             t.plan = { time = crnd(80, 100) }
             t.plan[flr(rnd(2))] = true -- go left or right
             t.plan[2] = rnd() > 0.8 -- jump
-        end
-        -- die in an explosion if necessary
-        if t.lives <= 0 then
-            del(tomatoes, t)
-            for i = 0,10 do
-                add(particles, { x = t.x + rnd(8) - 4,
-                                 y = t.y + rnd(8) - 8,
-                                 age = 20 + rnd(5),
-                                 color = { 0, 5, 2, 8 },
-                                 r = { 3, 5, 7 } })
-            end
-            score += g_points_kill
-            sfx(18)
         end
     end)
 end
@@ -503,114 +432,6 @@ function update_entity(e, go_left, go_right, go_up, go_down)
                          y = e.y + rnd(2) + 2 - rnd(2) * (e.y - old_y),
                          age = 20 + rnd(5), color = e.pcolors,
                          r = { 0.5, 1, 0.5 } })
-    end
-
-    foreach (e.shots, function(s)
-        -- always advance tail
-        s.x0 += s.dx * 0.75
-        -- only advance head if not already exploded
-        if not s.exploded then
-            foreach(tomatoes, function(t)
-                -- bounding box is a bit larger than ours
-                if (abs(s.x1 - t.x) <= 6) and (abs(s.y1 - 2 - t.y) <= 6) then
-                    t.lives -= 1
-                    s.exploded = true
-                    t.hit = 5
-                end
-            end)
-            if wall(s.x1, s.y1) or wall(s.x1 + s.dx / 2, s.y1) then
-                s.exploded = true
-            end
-            if s.exploded then
-                add(particles, { x = s.x1 + (rnd(4) - 2),
-                                 y = s.y1 + (rnd(4) - 2),
-                                 age = 20 + rnd(5), color = { 10, 9, 8 },
-                                 r = { 0.5, 1, 0.5 } })
-                sfx(14)
-            end
-            s.x1 += s.dx
-        end
-        -- delete if lost in the void or finished exploding
-        if s.x0 > 128 or s.x0 < 0 or (s.x1 - s.x0) * s.dx <= 0 then
-            del(e.shots, s)
-        end
-    end)
-end
-
--- collectibles
-
-function collectibles(table, n)
-    for j=0, 15 do
-        for i=0, 15 do
-            local tile = mget(i,j)
-            if tile == n then
-                add(table, { cx = i, cy = j })
-            end
-        end
-    end
-end
-
-function collect_fish()
-    foreach(fishes, function(f)
-        if flr(player.x / 8) == f.cx and flr(player.y / 8) == f.cy then
-            add(hidefish, {cx = f.cx, cy = f.cy, date = time()})
-            fish += g_fish_ammo
-            del(fishes, f)
-            sfx(15)
-        end
-    end)
-    foreach(hidefish, function(f)
-        if f.date + 20 < time() then
-            add(fishes, f)
-            del(hidefish, f)
-        end
-    end)
-end
-
-function collect_meat()
-    foreach(meat, function(m)
-        if flr(player.x / 8) == m.cx and flr(player.y / 8) == m.cy then
-            add(hidemeat, {cx = m.cx, cy = m.cy, date = time()})
-            if player.lives < g_lives_player_max then
-                player.lives += 1
-            end
-            del(meat, m)
-            sfx(15)
-        end
-    end)
-    foreach(hidemeat, function(f)
-        if f.date + 20 < time() then
-            add(meat, f)
-            del(hidemeat, f)
-        end
-    end)
-end
-
--- spam
-
-function spam(x,y)
-    local tile = mget(x / 8, y / 8)
-    if tile == 20 or tile == 21 or tile == 36 or tile == 37 then -- this is spam
-        return true
-    end  
-end
-
--- lives
-
-function lives_handling()
-    local l = 40 / g_lives_player_max
-    lives_x1 = 80 + player.lives * l
-
-    -- if dead, switch to pause state after 60 frames
-    if player.dead then
-        player.cooldown -= 1
-        if player.cooldown <= 0 then
-            state = "pause"
-            player.lives = 5
-            menu.doordw = 128
-            menu.doorx = 0
-            player = new_player(64, 150)
-        end
     end
 end
 
@@ -814,12 +635,6 @@ end
 
 function draw_tomatoes()
     foreach(tomatoes, draw_entity)
-end
-
-function draw_collectible(table, n)
-    foreach(table, function(c)
-        spr(n, c.cx * 8, c.cy * 8)
-    end)
 end
 
 function draw_background()
