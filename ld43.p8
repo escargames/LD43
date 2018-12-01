@@ -566,8 +566,8 @@ function draw_menu()
         if menu.doordw > 126 then
             if not menu.scores then
                 corectfill(menu.rect_y0, menu.rect_y1, 35, 6, 0)
-                csprint("joe       ", 32, 12, 11)
-                csprint("    pickle", 32, 12, 9)
+                csprint("ld43     ", 32, 12, 11)
+                csprint("     game", 32, 12, 9)
                 csprint("play", 60, 9, 13)
                 csprint("high", 78, 9, 13)
             else
