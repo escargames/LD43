@@ -126,8 +126,8 @@ end
 
 -- cool random
 
-function crnd(min, max)
-  return min + rnd(max-min)
+function crnd(a, b)
+  return min(a, b) + rnd(abs(b - a))
 end
 
 function ccrnd(tab)  -- takes a tab and choose randomly between the elements of the table
@@ -687,6 +687,11 @@ end
 
 function draw_debug()
     print("selectcolor "..selectcolor, 5, 5, 7)
+    local j = 12
+    foreach(world.tomatoes, function(t)
+        j += 6
+        print("tomato "..t.x.." "..t.y, 5, j)
+    end)
 end
 
 __gfx__
