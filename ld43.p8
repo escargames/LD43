@@ -7,9 +7,9 @@ __lua__
 --
 
 config = {
-    menu = {tl = "menu"},
-    play = {tl = "play"},
-    pause = {tl = "pause"},
+    menu = {},
+    play = {},
+    pause = {},
 }
 
 g_sfx_menu = 16
@@ -20,8 +20,9 @@ g_sfx_footstep = 11
 g_spr_player = 18
 g_spr_follower = 20
 g_spr_exit = 26
-g_palette = {{ 6, 5 }, { 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }}
 g_spr_spikes = 36
+
+g_palette = {{ 6, 5 }, { 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }}
 
 --
 -- levels
@@ -212,52 +213,29 @@ function _init()
 end
 
 function _update60()
-    if state == "menu" then
-        update_menu()
-        update_particles()
-        update_player()
-    elseif state == "play" then
-        update_particles()
-        update_player()
-        update_tomatoes()
-    elseif state == "pause" then
-        update_pause()
-        update_particles()
-        update_player()
-    end
+    config[state].update()
 end
 
 function _draw()
-    if state == "menu" then
-        cls(0)
-        draw_world()
-        draw_menu()
-    elseif state == "play" then
-        cls(0)
-        -- player-centered camera if map is larger than screen, otherwise fixed camera
-        camera(world.x * 8 + (world.w > 16 and mid(0, world.player.x - world.x * 8 - 64, world.w * 8 - 128) or 4 * world.w - 64),
-               world.y * 8 + (world.h > 16 and mid(0, world.player.y - world.y * 8 - 64, world.h * 8 - 128) or 4 * world.h - 64))
-        draw_world()
-        draw_particles()
-        draw_tomatoes()
-        draw_player()
-        camera()
-        draw_ui()
-        --draw_debug()
-    elseif state == "pause" then
-        cls(0)
-        draw_menu()
-    end
+    config[state].draw()
 end 
 
 --
 -- menu
 --
 
-function update_menu()
+function config.menu.update()
     open_door()
     choose_menu()
     rect_menu()
+    update_particles()
+    update_player()
+end
+
+function config.menu.draw()
+    cls(0)
+    draw_world()
+    draw_menu()
 end
 
 function open_door()
@@ -317,6 +295,26 @@ end
 --
 -- play
 --
+
+function config.play.update()
+    update_particles()
+    update_player()
+    update_tomatoes()
+end
+
+function config.play.draw()
+    cls(0)
+    -- player-centered camera if map is larger than screen, otherwise fixed camera
+    camera(world.x * 8 + (world.w > 16 and mid(0, world.player.x - world.x * 8 - 64, world.w * 8 - 128) or 4 * world.w - 64),
+           world.y * 8 + (world.h > 16 and mid(0, world.player.y - world.y * 8 - 64, world.h * 8 - 128) or 4 * world.h - 64))
+    draw_world()
+    draw_particles()
+    draw_tomatoes()
+    draw_player()
+    camera()
+    draw_ui()
+    --draw_debug()
+end
 
 function move_x(e, dx)
     if not wall_area(e.x + dx, e.y, 4, 4) then
@@ -566,7 +564,7 @@ end
 -- pause
 --
 
-function update_pause()
+function config.pause.update()
     if btn(4) then
         keep_score(score)
         state = "menu"
@@ -575,6 +573,13 @@ function update_pause()
         music(-0, 5000)
         music(7, 8000)
     end
+    update_particles()
+    update_player()
+end
+
+function config.pause.draw()
+    cls(0)
+    draw_menu()
 end
 
 -- keeping scores
