@@ -99,6 +99,7 @@ function new_player(x, y)
     e.spr = g_spr_player
     e.ssize = 2
     e.pcolors = { 3, 11 }
+    e.call = 1
     return e
 end
 
@@ -106,9 +107,9 @@ function new_tomato(x, y)
     local e = new_entity(x, y)
     e.spd = 0.5
     e.ssize = 1
-    e.plan = { call = false }
-    e.color = flr(crnd(1, 5))
-    e.spr = g_spr_follower + e.color - 1
+    e.plan = {}
+    e.color = flr(crnd(2, 6))
+    e.spr = g_spr_follower + e.color - 2
     e.pcolors = g_palette[e.color]
     return e
 end
@@ -361,16 +362,8 @@ function update_player()
         elseif btnp(1) and state == "play" and selectcolor < #color then
             selectcolor += 1
         end
+        world.player.call = selectcolor
     end
-
-    -- calling and stop calling
-    foreach(world.tomatoes, function(t)
-        if btnp(4) and state == "play" and t.plan.call == false then
-            t.plan.call = true
-        elseif btnp(4) and state == "play" and t.plan.call == true then
-            t.plan.call = false
-        end
-    end)
 end
 
 function update_tomatoes()
@@ -378,7 +371,7 @@ function update_tomatoes()
         local old_x, old_y = t.x, t.y
         update_entity(t, t.plan[0], t.plan[1], t.plan[2], t.plan[3])
         -- update move plan if necessary
-        if t.plan.call == true then -- go left or right 
+        if world.player.call == t.color and not selectcolorscreen then -- go left or right 
             if t.x < world.player.x + 1 then 
                 t.plan[0] = false
                 t.plan[1] = true 
