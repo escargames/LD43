@@ -71,7 +71,7 @@ function new_tomato(x, y)
     e.spd = 0.5
     e.spr = 30
     e.pcolors = { 2, 8 }
-    e.plan = { time = 0 }
+    e.plan = { call = false }
     return e
 end
 
@@ -320,9 +320,12 @@ function update_player()
     if player.dead then return end
     update_entity(player, btn(0), btn(1), jump(), btn(3))
 
-    -- shooting!
-    if btn(4) and state == "play" then
-    end
+    -- calling
+    foreach(tomatoes, function(t)
+        if btn(4) and state == "play" then
+            t.plan.call = true
+        end
+    end)
 end
 
 function update_tomatoes()
@@ -331,11 +334,14 @@ function update_tomatoes()
         update_entity(t, t.plan[0], t.plan[1], t.plan[2], t.plan[3])
 
         -- update move plan if necessary
-        t.plan.time -= 1
-        if t.plan.time <= 0 or (old_x == t.x and old_y == t.y) then
-            t.plan = { time = crnd(80, 100) }
-            t.plan[flr(rnd(2))] = true -- go left or right
-            t.plan[2] = rnd() > 0.8 -- jump
+        if t.plan.call == true then -- go left or right
+            if t.x < player.x then 
+                t.plan[0] = false
+                t.plan[1] = true 
+            elseif t.x > player.x then
+                t.plan[1] = false
+                t.plan[0] = true
+            end
         end
     end)
 end
