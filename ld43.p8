@@ -72,7 +72,7 @@ function new_game()
     color = {1, 2, 3, 4, 5}
     world = make_world(1)
     -- spawn tomatoes (needs to be improved)
-    for i=1,32 do
+    for i=1,12 do
         add(world.tomatoes, new_tomato(8 * world.x + crnd(32, 96), 8 * world.y + crnd(-20,-50)))
     end
 end
