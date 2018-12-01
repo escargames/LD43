@@ -20,6 +20,7 @@ g_sfx_footstep = 11
 g_spr_player = 18
 g_spr_follower = 20
 g_spr_exit = 26
+g_palette = {{ 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }}
 
 --
 -- constructors
@@ -29,9 +30,9 @@ function new_game()
     score = 0
     saved = 0
     particles = {}
-    selectcolor = 0
+    selectcolor = 1
     selectcolorscreen = false
-    color = {1, 2, 3}
+    color = {1, 2, 3, 4}
     player = new_player(16, 80)
     tomatoes = {
         new_tomato(48, -20),
@@ -82,7 +83,7 @@ function new_tomato(x, y)
     e.plan = { call = false }
     e.color = flr(rnd(4))
     e.spr = g_spr_follower + e.color
-    e.pcolors = ({{ 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }})[e.color + 1]
+    e.pcolors = g_palette[e.color + 1]
     return e
 end
 
@@ -213,7 +214,7 @@ function _draw()
         draw_tomatoes()
         draw_player()
         draw_ui()
-        --draw_debug()
+        draw_debug()
     elseif state == "pause" then
         cls(0)
         draw_menu()
@@ -324,7 +325,7 @@ function update_player()
     if not btn(4) then
         update_entity(player, btn(0), btn(1), jump(), btn(3))
         selectcolorscreen = false
-    elseif btnp(4) and state == "play" then
+    elseif btn(4) and state == "play" then
         selectcolorscreen = true
         if btnp(0) and state == "play" and selectcolor > 1 then
             selectcolor -= 1
@@ -602,12 +603,11 @@ function draw_ui()
     csprint(tostr(flr(score).."     "), 2, 9, 13)
     if selectcolorscreen then
         for i = 1, #color do
-            local p = mid(15, player.x, 113) - (#color-1)*5 + (i-1)*10
-            rect((p - 3), player.y - 17, (p + 3), player.y - 11, 6)
-            rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, 8)
+            local p = mid(20, player.x, 108) - (#color-1)*5 + (i-1)*10
+            local palette = g_palette[color[i]]
+            rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, palette[2])
         end
-        --if levelsaved > 0 then
-            --rect(64 - (levelsaved - 1)*10 + (selectlevel - 1)*20 - 3, 80-3, 64 - (levelsaved - 1)*10 + (selectlevel - 1)*20 + 5, 80+7, 14)
+            rect((mid(20, player.x, 108) - (#color-1)*5 + (selectcolor-1)*10 - 3), player.y - 17, (mid(20, player.x, 108) - (#color-1)*5 + (selectcolor-1)*10 + 3), player.y - 11, 6)
         
             --for i = 1,3 do
             --local colr = 5
@@ -616,7 +616,6 @@ function draw_ui()
                 --end
             --cosprint("★ ", 64 - 23 + (i - 1)*20, 60, 6, colr) 
             --end
-        --end
     end
 end
 
@@ -649,13 +648,7 @@ function draw_tomatoes()
 end
 
 function draw_debug()
-    print("player.xy "..player.x.." "..player.y, 5, 118, 6)
-    print("jump "..player.jump.."  fall "..player.fall, 5, 111, 6)
-    print("grounded "..(player.grounded and 1 or 0).."  ladder "..(player.ladder and 1 or 0), 5, 104, 6)
-     -- debug collisions
-    fillp(0xa5a5.8)
-    rect(player.x - 4, player.y - 4, player.x + 3, player.y + 3, 8)
-    fillp()
+    print("selectcolor "..selectcolor, 5, 5, 7)
 end
 
 __gfx__
