@@ -387,10 +387,12 @@ function update_tomatoes()
            abs(t.x - world.exit.x) < 2 and
            abs(t.y - world.exit.y) < 2 then
             saved += 1
+            numbercats[t.color] -= 1
             del(world.tomatoes, t)
         end
         -- did we die in spikes or some other trap?
         if trap(t.x, t.y) then
+            numbercats[t.color] -= 1
             del(world.tomatoes, t)
         end
     end)
