@@ -20,7 +20,7 @@ g_sfx_footstep = 11
 g_spr_player = 18
 g_spr_follower = 20
 g_spr_exit = 26
-g_palette = {{ 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }}
+g_palette = {{ 6, 5 }, { 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }}
 
 --
 -- constructors
@@ -33,7 +33,7 @@ function new_game()
     selectcolor = 1
     selectcolorscreen = false
 
-    color = {1, 2, 3, 4}
+    color = {1, 2, 3, 4, 5}
     world = {
         player = new_player(16, 80),
         tomatoes = {}
@@ -82,9 +82,9 @@ function new_tomato(x, y)
     e.spd = 0.5
     e.ssize = 1
     e.plan = { call = false }
-    e.color = flr(rnd(4))
-    e.spr = g_spr_follower + e.color
-    e.pcolors = g_palette[e.color + 1]
+    e.color = flr(crnd(1, 5))
+    e.spr = g_spr_follower + e.color - 1
+    e.pcolors = g_palette[e.color]
     return e
 end
 
@@ -609,19 +609,11 @@ function draw_ui()
     if selectcolorscreen then
         local player = world.player
         for i = 1, #color do
-            local p = mid(20, player.x, 108) - (#color-1)*5 + (i-1)*10
+            local p = mid(64 - 200/#color, player.x, 64 + 200/#color) - (#color-1)*5 + (i-1)*10
             local palette = g_palette[color[i]]
             rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, palette[2])
         end
-            rect((mid(20, player.x, 108) - (#color-1)*5 + (selectcolor-1)*10 - 3), player.y - 17, (mid(20, player.x, 108) - (#color-1)*5 + (selectcolor-1)*10 + 3), player.y - 11, 6)
-        
-            --for i = 1,3 do
-            --local colr = 5
-                --if i <= dget(selectlevel) then
-                    --colr = 10
-                --end
-            --cosprint("★ ", 64 - 23 + (i - 1)*20, 60, 6, colr) 
-            --end
+            rect((mid(64 - 200/#color, player.x, 64 + 200/#color) - (#color-1)*5 + (selectcolor-1)*10 - 3), player.y - 17, (mid(64 - 200/#color, player.x, 64 + 200/#color) - (#color-1)*5 + (selectcolor-1)*10 + 3), player.y - 11, 6)
     end
 end
 
