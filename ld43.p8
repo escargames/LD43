@@ -314,7 +314,7 @@ function config.play.draw()
     draw_player()
     camera()
     draw_ui()
-    --draw_debug()
+    draw_debug()
 end
 
 function move_x(e, dx)
@@ -368,25 +368,19 @@ function update_tomatoes()
     foreach(world.tomatoes, function(t)
         local old_x, old_y = t.x, t.y
         update_entity(t, t.plan[0], t.plan[1], t.plan[2], t.plan[3])
+        for i = 0, 3 do
+            t.plan[i] = false
+        end
         -- update move plan if necessary
         if world.player.call == t.color and not selectcolorscreen then -- go left or right or up or down
-            if t.x < world.player.x + 1 then 
-                t.plan[0] = false
+            if t.x < world.player.x - 1 then 
                 t.plan[1] = true 
-            elseif t.x > world.player.x - 1 then
-                t.plan[1] = false
+            elseif t.x > world.player.x + 1 then
                 t.plan[0] = true
-            end
-            if t.y < world.player.y + 4 then
+            elseif t.y < world.player.y - 4 then
                 t.plan[3] = true
-                t.plan[2] = false
-            elseif t.y > world.player.y - 4 then
+            elseif t.y > world.player.y + 4 then
                 t.plan[2] = true
-                t.plan[3] = false
-            end
-        else 
-            for i = 0, 3 do
-                t.plan[i] = false
             end
         end
         -- did we reach the exit?
@@ -706,7 +700,6 @@ function draw_tomatoes()
 end
 
 function draw_debug()
-    print("selectcolor "..selectcolor, 5, 5, 7)
     local j = 12
     foreach(world.tomatoes, function(t)
         j += 6
