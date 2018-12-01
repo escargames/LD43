@@ -22,6 +22,8 @@ g_spr_follower = 20
 g_spr_exit = 26
 g_spr_spikes = 36
 
+g_fill_amount = 2
+
 g_palette = {{ 6, 5 }, { 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }}
 
 --
@@ -44,13 +46,16 @@ function make_world(level)
     end
     world.spikes = {}
     world.tomatoes = {}
+    world.spikes_lut = {} -- fixme: not very nice
     -- analyse level to find where the exit and traps are
     for y=world.y,world.y+world.h-1 do
         for x=world.x,world.x+world.w-1 do
             if mget(x,y) == g_spr_exit then
                 world.exit = {x = 8 * x + 8, y = 8 * y + 12}
             elseif mget(x,y) == g_spr_spikes then
-                add(world.spikes, {x = 8 * x + 4, y = 8 * y + 4, fill = 0})
+                local s = {x = 8 * x + 4, y = 8 * y + 4, fill = 0}
+                add(world.spikes, s)
+                world.spikes_lut[x + y / 256] = s
             end
         end
     end
@@ -399,12 +404,8 @@ function update_tomatoes()
         end
         -- did we die in spikes or some other trap?
         if trap(t.x, t.y) then
-            foreach(world.spikes, function(s)
-                if abs(s.x - t.x) < 4 and
-                   abs(s.y - t.y) < 4 then
-                    s.fill += 1
-                end
-            end)
+            s = world.spikes_lut[flr(t.x/8) + flr(t.y/8)/256]
+            s.fill = min(s.fill + g_fill_amount, 8)
             numbercats[t.color] -= 1
             del(world.tomatoes, t)
         end
@@ -522,6 +523,9 @@ end
 
 function wall_or_ladder(x,y)
     local m = mget(x/8,y/8)
+    if fget(m,5) and world.spikes_lut[flr(x/8) + flr(y/8)/256].fill >= 8 then
+        return true
+    end
     if ((x%8<4) and (y%8<4)) return fget(m,0)
     if ((x%8>=4) and (y%8<4)) return fget(m,1)
     if ((x%8<4) and (y%8>=4)) return fget(m,2)
