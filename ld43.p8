@@ -376,12 +376,13 @@ function update_tomatoes()
             elseif t.x > world.player.x - 1 then
                 t.plan[1] = false
                 t.plan[0] = true
-            elseif t.y < world.player.y + 1 then
-                tplan[3] = true
-                tplan[2] = false
-            elseif t.y > world.player.y - 1 then
-                tplan[2] = true
-                tplan[3] = false
+            end
+            if t.y < world.player.y + 4 then
+                t.plan[3] = true
+                t.plan[2] = false
+            elseif t.y > world.player.y - 4 then
+                t.plan[2] = true
+                t.plan[3] = false
             end
         else 
             for i = 0, 3 do
