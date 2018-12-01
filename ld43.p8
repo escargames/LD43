@@ -12,6 +12,11 @@ config = {
     pause = {tl = "pause"},
 }
 
+g_sfx_menu = 16
+g_sfx_jump = 10
+g_sfx_ladder = 13
+g_sfx_footstep = 11
+
 --
 -- constructors
 --
@@ -215,11 +220,11 @@ function open_door()
         elseif menu.rectpos == 2 then
             menu.scores = true
         end
-        sfx(16)
+        sfx(g_sfx_menu)
     elseif btnp(4) and menu.scores then
         menu.scores = false
         menu.high_y = 78
-        sfx(16)
+        sfx(g_sfx_menu)
     end
 
     if menu.opening == true then
@@ -254,10 +259,10 @@ end
 function choose_menu()
     if btnp(3) and menu.rectpos < 2 then
         menu.rectpos += 1
-        sfx(16)
+        sfx(g_sfx_menu)
     elseif btnp(2) and menu.rectpos > 1 then
         menu.rectpos -= 1
-        sfx(16)
+        sfx(g_sfx_menu)
     end
 end
 
@@ -376,7 +381,7 @@ function update_entity(e, go_left, go_right, go_up, go_down)
             e.jump = 20
             e.jumped = true
             if state == "play" then
-                sfx(10)
+                sfx(g_sfx_jump)
             end
         end
     elseif go_down then
@@ -402,7 +407,7 @@ function update_entity(e, go_left, go_right, go_up, go_down)
         if last_move == nil or time() > last_move + 0.25 then
             last_move = time()
             if state == "play" then
-                sfx(11)
+                sfx(g_sfx_footstep)
             end
         end
     end
@@ -410,7 +415,7 @@ function update_entity(e, go_left, go_right, go_up, go_down)
     if ladder and old_y != e.y then
         if last_move == nil or time() > last_move + 0.25 then
             last_move = time()
-            sfx(13)
+            sfx(g_sfx_ladder)
         end
     end
 
@@ -491,7 +496,7 @@ function update_pause()
         keep_score(score)
         state = "menu"
         player = new_player(64, 150)
-        sfx(16)
+        sfx(g_sfx_menu)
         music(-0, 5000)
         music(7, 8000)
     end
