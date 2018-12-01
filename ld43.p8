@@ -602,7 +602,7 @@ function draw_ui()
     csprint(tostr(flr(score).."     "), 2, 9, 13)
     if selectcolorscreen then
         for i = 1, #color do
-            local p = player.x - (#color-1)*5 + (i-1)*10
+            local p = mid(15, player.x, 113) - (#color-1)*5 + (i-1)*10
             rect((p - 3), player.y - 17, (p + 3), player.y - 11, 6)
             rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, 8)
         end
