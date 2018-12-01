@@ -105,7 +105,7 @@ end
 
 function new_tomato(x, y)
     local e = new_entity(x, y)
-    e.spd = 0.5
+    e.spd = crnd(0.4, 0.6)
     e.ssize = 1
     e.plan = { call = false }
     e.color = flr(crnd(1, 5))
