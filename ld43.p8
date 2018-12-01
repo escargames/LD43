@@ -605,10 +605,11 @@ end
 function draw_ui()
     csprint(tostr(flr(score).."     "), 2, 9, 13)
     if selectcolorscreen then
+        local player = world.player
         for i = 1, #color do
-            local p = world.player.x - (#color-1)*5 + (i-1)*10
-            rect((p - 3), world.player.y - 17, (p + 3), world.player.y - 11, 6)
-            rectfill((p - 2), world.player.y - 16, (p + 2), world.player.y - 12, 8)
+            local p = mid(15, player.x, 113) - (#color-1)*5 + (i-1)*10
+            rect((p - 3), player.y - 17, (p + 3), player.y - 11, 6)
+            rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, 8)
         end
         --if levelsaved > 0 then
             --rect(64 - (levelsaved - 1)*10 + (selectlevel - 1)*20 - 3, 80-3, 64 - (levelsaved - 1)*10 + (selectlevel - 1)*20 + 5, 80+7, 14)
