@@ -68,7 +68,6 @@ function new_game()
     selectcolor = 1
     numbercats = {0, 0, 0, 0, 0}
     selectcolorscreen = false
-
     color = {1, 2, 3, 4, 5}
     world = make_world(1)
     -- spawn tomatoes (needs to be improved)
@@ -678,7 +677,7 @@ function draw_player()
     draw_entity(player)
     if selectcolorscreen then
         for i = 1, #color do
-            local p = mid(world.x * 8 + 64 - 200/#color, player.x, (world.x + world.w) * 8 - 64 + 200/#color) - (#color-1)*5 + (i-1)*10
+            local p = mid(world.x * 8 + #color*5, player.x, (world.x + world.w) * 8 - #color*5) - (#color-1)*5 + (i-1)*10
             local palette = g_palette[color[i]]
             rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, palette[2])
             if i == 1 then
