@@ -75,6 +75,7 @@ end
 
 function new_player(x, y)
     local e = new_entity(x, y)
+    e.can_jump = true
     e.spd = 1.0
     e.spr = g_spr_player
     e.ssize = 2
@@ -425,7 +426,7 @@ function update_entity(e, go_left, go_right, go_up, go_down)
         if ladder then
             move_y(e, -e.climbspd)
             ladder_middle(e)
-        elseif grounded and not e.jumped then
+        elseif grounded and e.can_jump and not e.jumped then
             e.jump = 20
             e.jumped = true
             if state == "play" then
