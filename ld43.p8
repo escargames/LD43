@@ -50,7 +50,7 @@ function make_world(level)
             if mget(x,y) == g_spr_exit then
                 world.exit = {x = 8 * x + 8, y = 8 * y + 12}
             elseif mget(x,y) == g_spr_spikes then
-                add(world.spikes, {x = 8 * x + 4, y = 8 * y + 4})
+                add(world.spikes, {x = 8 * x + 4, y = 8 * y + 4, fill = 0})
             end
         end
     end
@@ -391,6 +391,12 @@ function update_tomatoes()
         end
         -- did we die in spikes or some other trap?
         if trap(t.x, t.y) then
+            foreach(world.spikes, function(s)
+                if abs(s.x - t.x) < 4 and
+                   abs(s.y - t.y) < 4 then
+                    s.fill += 1
+                end
+            end)
             del(world.tomatoes, t)
         end
     end)
@@ -631,6 +637,11 @@ function draw_menu()
 end
 
 function draw_world()
+    -- fill spikes
+    foreach(world.spikes, function(s)
+        rectfill(s.x - 4, s.y + 4, s.x + 3, s.y + 4 - s.fill, 8)
+    end)
+    -- draw world
     palt(14, true)
     map(world.x, world.y, 8 * world.x, 8 * world.y, world.w, world.h)
     palt(14, false)
