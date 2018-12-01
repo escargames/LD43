@@ -65,7 +65,7 @@ function new_game()
     saved = 0
     particles = {}
     selectcolor = 1
-    numbercats = {0, 10, 2, 4, 8}
+    numbercats = {0, 0, 0, 0, 0}
     selectcolorscreen = false
 
     color = {1, 2, 3, 4, 5}
@@ -109,6 +109,7 @@ function new_tomato(x, y)
     e.ssize = 1
     e.plan = {}
     e.color = flr(crnd(2, 6))
+    numbercats[e.color] += 1
     e.spr = g_spr_follower + e.color - 2
     e.pcolors = g_palette[e.color]
     return e
