@@ -222,7 +222,7 @@ function _draw()
         draw_tomatoes()
         draw_player()
         draw_ui()
-        draw_debug()
+        --draw_debug()
     elseif state == "pause" then
         cls(0)
         draw_menu()
@@ -626,6 +626,10 @@ function draw_ui()
             local p = mid(64 - 200/#color, player.x, 64 + 200/#color) - (#color-1)*5 + (i-1)*10
             local palette = g_palette[color[i]]
             rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, palette[2])
+            if i == 1 then
+                line((p - 2), player.y - 16, (p + 2), player.y - 12, 7)
+                line((p + 2), player.y - 16, (p - 2), player.y - 12, 7)
+            end
         end
             rect((mid(64 - 200/#color, player.x, 64 + 200/#color) - (#color-1)*5 + (selectcolor-1)*10 - 3), player.y - 17, (mid(64 - 200/#color, player.x, 64 + 200/#color) - (#color-1)*5 + (selectcolor-1)*10 + 3), player.y - 11, 6)
     end
