@@ -50,7 +50,7 @@ function make_world(level)
             if mget(x,y) == g_spr_exit then
                 world.exit = {x = 8 * x + 8, y = 8 * y + 12}
             elseif mget(x,y) == g_spr_spikes then
-                add(world.spikes, {x = 8 * x + 4, y = 8 * y + 4})
+                add(world.spikes, {x = 8 * x + 4, y = 8 * y + 4, fill = 0})
             end
         end
     end
@@ -72,7 +72,7 @@ function new_game()
     color = {1, 2, 3, 4, 5}
     world = make_world(1)
     -- spawn tomatoes (needs to be improved)
-    for i=1,32 do
+    for i=1,12 do
         add(world.tomatoes, new_tomato(8 * world.x + crnd(32, 96), 8 * world.y + crnd(-20,-50)))
     end
 end
@@ -126,8 +126,8 @@ end
 
 -- cool random
 
-function crnd(min, max)
-  return min + rnd(max-min)
+function crnd(a, b)
+  return min(a, b) + rnd(abs(b - a))
 end
 
 function ccrnd(tab)  -- takes a tab and choose randomly between the elements of the table
@@ -399,6 +399,12 @@ function update_tomatoes()
         end
         -- did we die in spikes or some other trap?
         if trap(t.x, t.y) then
+            foreach(world.spikes, function(s)
+                if abs(s.x - t.x) < 4 and
+                   abs(s.y - t.y) < 4 then
+                    s.fill += 1
+                end
+            end)
             numbercats[t.color] -= 1
             del(world.tomatoes, t)
         end
@@ -640,6 +646,11 @@ function draw_menu()
 end
 
 function draw_world()
+    -- fill spikes
+    foreach(world.spikes, function(s)
+        rectfill(s.x - 4, s.y + 4, s.x + 3, s.y + 4 - s.fill, 8)
+    end)
+    -- draw world
     palt(14, true)
     map(world.x, world.y, 8 * world.x, 8 * world.y, world.w, world.h)
     palt(14, false)
@@ -696,6 +707,11 @@ end
 
 function draw_debug()
     print("selectcolor "..selectcolor, 5, 5, 7)
+    local j = 12
+    foreach(world.tomatoes, function(t)
+        j += 6
+        print("tomato "..t.x.." "..t.y, 5, j)
+    end)
 end
 
 __gfx__
