@@ -32,7 +32,7 @@ function new_game()
     saved = 0
     particles = {}
     selectcolor = 1
-    numbercats = 10
+    numbercats = {0, 10, 2, 4, 8}
     selectcolorscreen = false
 
     color = {1, 2, 3, 4, 5}
@@ -638,7 +638,7 @@ function draw_ui()
         local palette = g_palette[color[selectcolor]]
         rectfill(6, 3, 16, 13, palette[2])
         rect(5, 2, 17, 14, 6)
-        print(tostr(numbercats), 12 - #tostr(numbercats)*2, 6, palette[1])
+        print(tostr(numbercats[selectcolor]), 12 - #tostr(numbercats[selectcolor])*2, 6, palette[1])
     end
 end
 
