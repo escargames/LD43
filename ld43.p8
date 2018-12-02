@@ -658,7 +658,7 @@ function draw_menu()
                 print("play", 64, 57, 9)
                 print("levels", 64, 75, 9)
                 font_outline()
-                font_center()
+                font_center(false)
             else
                 csprint("levels", menu.high_y - 10, 9, 13)
                 local select = {4, 4, 4, 4, 4, 4}
@@ -709,7 +709,9 @@ function draw_ui()
     if selectcolor > 1 then
         local palette = g_palette[color[selectcolor]]
         smoothrectfill(6, 3, 22, 17, 5, palette[2], 6)
-        print(tostr(numbercats[selectcolor]), 12 - #tostr(numbercats[selectcolor])*2, 4, palette[1])
+        font_center(true)
+        print(numbercats[selectcolor], 14, 4, palette[1])
+        font_center(false)
     end
 end
 
@@ -873,6 +875,7 @@ function load_font(data, height)
             poke(m+1,x) poke(m+2,y)
         end
         col = col or peek(m)
+        str = tostr(str)
         local delta = min(1, 1/scale)
         local startx = x
         local maxx = x
@@ -896,7 +899,7 @@ function load_font(data, height)
             end
         end
         -- print outline
-        local dx = center and flr((startx - maxx) / 2) or 0
+        local dx = center and flr((startx - maxx + 0.5) / 2) or 0
         if outline > 0 or ox != 0 or oy != 0 then
             for p,m in pairs(pixels) do
                 local x,y = p%1*256+ox+dx, flr(p)+oy
