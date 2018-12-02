@@ -197,6 +197,36 @@ function orectfill(x0, y0, x1, y1, color1, color2)
     rect(x0, y0, x1, y1, color2)
 end
 
+-- rect with smooth sides
+
+function smoothrect(x0, y0, x1, y1, r, col)
+    line(x0, y0 + r, x0, y1 - r, col)
+    line(x1, y0 + r, x1, y1 - r, col)
+    line(x0 + r, y0, x1 - r, y0, col)
+    line(x0 + r, y1, x1 - r, y1, col)
+    clip(x0, y0, r, r)
+    circ(x0 + r, y0 + r, r, col)
+    clip(x0, y1 - r, r, r + 1)
+    circ(x0 + r, y1 - r, r, col)
+    clip(x1 - r, y0, r + 1, r)
+    circ(x1 - r, y0 + r, r, col)
+    clip(x1 - r, y1 - r, r + 1, r + 1)
+    circ(x1 - r, y1 - r, r, col)
+    clip()
+end
+
+-- rect filled with smooth sides
+
+function smoothrectfill(x0, y0, x1, y1, r, col1, col2)
+    circfill(x0 + r, y0 + r, r, col1)
+    circfill(x0 + r, y1 - r, r, col1)
+    circfill(x1 - r, y0 + r, r, col1)
+    circfill(x1 - r, y1 - r, r, col1)
+    rectfill(x0 + r, y0, x1 - r, y1, col1)
+    rectfill(x0, y0 + r, x1, y1 -r, col1)
+    smoothrect(x0, y0, x1, y1, r, col2)
+end
+
 --
 -- standard pico-8 workflow
 --
@@ -619,6 +649,7 @@ function draw_menu()
     if state == "menu" then
         if menu.doordw > 126 then
             if not menu.scores then
+                smoothrectfill(5, 5, 55, 55, 10, 8, 0)
                 corectfill(menu.rect_y0, menu.rect_y1, 35, 6, 0)
                 csprint("ld43     ", 32, 12, 11)
                 csprint("     game", 32, 12, 15)
