@@ -687,20 +687,20 @@ function draw_menu()
                 print("levels", 64, menu.high_y - 10, 13)
                 font_center()
                 font_outline()
-                local select = {9, 9, 9, 9, 9, 9}
-                select[menu.selectlevel] = 8
-                smoothrectfill(23, 40, 43, 60, 5, 15, select[1])
-                smoothrectfill(53, 40, 73, 60, 5, 15, select[2])
-                smoothrectfill(83, 40, 103, 60, 5, 15, select[3])
-                smoothrectfill(23, 70, 43, 90, 5, 15, select[4])
-                smoothrectfill(53, 70, 73, 90, 5, 15, select[5])
-                smoothrectfill(83, 70, 103, 90, 5, 15, select[6])
-                for i = 1, 3 do
-                    print(tostr(i), 3 + i * 29, 43, 5)
-                    print(tostr(i+3), 2 + i * 30, 73, 5)
-                    font_outline(0.5, 0.5)
-                    print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10) 
-                    font_outline()
+                local select = {}
+                if #g_levels < 7 then
+                    for i = 1, #g_levels do
+                    select[i] = 9
+                    select[menu.selectlevel] = 8
+                    smoothrectfill(-7 + 30*((i-1)%3 + 1), 40 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 60 + 30*flr((i-1)/3), 5, 15, select[i])
+                    end
+                    for i = 1, 3 do
+                        print(tostr(i), 3 + i * 29, 43, 5)
+                        print(tostr(i+3), 2 + i * 30, 73, 5)
+                        font_outline(0.5, 0.5)
+                        print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10) 
+                        font_outline()
+                    end
                 end
             end
         end
