@@ -217,6 +217,7 @@ function _init()
     music(7, 8000)
     state = "menu"
     particles = {}
+    num = {1}
     world = make_world(g_ong_level)
     menu = {
         doordw = 128,
@@ -360,6 +361,7 @@ end
 function config.play.update()
     update_particles()
     update_player()
+    update_numbercats()
     update_tomatoes()
 end
 
@@ -416,10 +418,21 @@ function update_player()
         selectcolorscreen = true
         if btnp(0) and state == "play" and selectcolor > 1 then
             selectcolor -= 1
-        elseif btnp(1) and state == "play" and selectcolor < #color then
+        elseif btnp(1) and state == "play" and selectcolor < #num then
             selectcolor += 1
         end
-        world.player.call = selectcolor
+        world.player.call = num[selectcolor]
+    end
+end
+
+function update_numbercats()
+    if selectcolorscreen then
+        num = {1}
+        for i = 2, #world.numbercats do
+            if world.numbercats[i] != 0 then
+                add(num, i)
+            end
+        end
     end
 end
 
@@ -439,14 +452,11 @@ function update_tomatoes()
                 t.happy -= 1
             end
             if t.x < world.player.x - 1 then 
-
                 t.plan[1] = true 
             elseif t.x > world.player.x + 1 then
-
                 t.plan[0] = true
             elseif t.y < world.player.y - 4 then
                 t.plan[3] = true
-
             elseif t.y > world.player.y + 4 then
                 t.plan[2] = true
             end
@@ -792,10 +802,10 @@ function draw_ui()
     print("goal", 20 + 15 * cell, 3, 7)
     font_scale()
     if selectcolor > 1 then
-        local palette = g_palette[color[selectcolor]]
+        local palette = g_palette[num[selectcolor]]
         smoothrectfill(6, 3, 22, 17, 5, palette[2], 6)
         font_center(true)
-        print(world.numbercats[selectcolor], 14, 4, palette[1])
+        print(world.numbercats[num[selectcolor]], 14, 4, palette[1])
         font_center(false)
     end
 end
@@ -813,9 +823,9 @@ function draw_player()
     local player = world.player
     draw_entity(player)
     if selectcolorscreen then
-        for i = 1, #color do
-            local p = mid(world.x * 8 + #color*5, player.x, (world.x + world.w) * 8 - #color*5) - (#color-1)*5 + (i-1)*10
-            local palette = g_palette[color[i]]
+        for i = 1, #num do
+            local p = mid(world.x * 8 + #num*5, player.x, (world.x + world.w) * 8 - #num*5) - (#num-1)*5 + (i-1)*10
+            local palette = g_palette[num[i]]
             rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, palette[2])
             if i == 1 then
                 line((p - 2), player.y - 16, (p + 2), player.y - 12, 7)
