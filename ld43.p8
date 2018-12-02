@@ -10,6 +10,7 @@ config = {
     menu = {},
     ready = {},
     play = {},
+    finished = {},
     pause = {},
 }
 
@@ -60,6 +61,7 @@ function make_world(level)
     world.tomatoes = {}
     world.spikes_lut = {} -- fixme: not very nice
     world.goal = {}
+    world.saved = { 0, 0, 0, 0, 0 }
     world.numbercats = { 0, 0, 0, 0, 0 }
     -- analyse level to find where the exit and traps are
     for y=world.y,world.y+world.h-1 do
@@ -85,7 +87,7 @@ function make_world(level)
                     world.numbercats[color] += spawn_count
                 -- otherwise, if count is on the right, it's a save goal
                 elseif save_count > 0 and save_count < 16 then
-                    world.goal[color] = flr(world.goal[color]) + save_count
+                    world.goal[color] = (world.goal[color] or 0) + save_count
                 end
             elseif sprite == g_spr_player then
                 local dir = x > world.x + world.w/2
@@ -332,12 +334,39 @@ function config.ready.update()
 end
 
 function config.ready.draw()
-    cls(1)
+    cls(0) fillp(0x1414.5) rectfill(0,0,128,128,1) fillp()
     font_outline(1)
     font_center(true)
     print("level "..level..":", 64, 20, 7)
     print(g_levels[level][5], 64, 40, 14)
-    print("please press ❎", 64, 100 + 5 * sin(t()), 9)
+    print("please press 🅾️", 64, 100 - 8.5 * abs(sin(t()/2)), 9)
+    font_outline()
+    font_center()
+end
+
+--
+-- level finished screen
+--
+
+function config.finished.update()
+    if btnp(g_btn_confirm) then
+        level += 1
+        if level > #g_levels then
+            -- beat the game...
+            state = "menu"
+        else
+            new_game()
+            state = "ready"
+        end
+    end
+end
+
+function config.finished.draw()
+    cls(0) fillp(0x1414.5) rectfill(0,0,128,128,1) fillp()
+    font_outline(1)
+    font_center(true)
+    print("congratulations!", 64, 20, 7)
+    print("please press 🅾️", 64, 100 - 8.5 * abs(sin(t()/2)), 9)
     font_outline()
     font_center()
 end
@@ -350,6 +379,23 @@ function config.play.update()
     update_particles()
     update_player()
     update_tomatoes()
+    -- did we win?
+    if world.win then
+        world.win -= 1
+        if world.win < 0 then
+            state = "finished"
+        end
+    else
+        local win = true
+        for i, num in pairs(world.goal) do
+            if world.saved[i] < num then
+                win = false
+            end
+        end
+        if win then
+            world.win = 40
+        end
+    end
 end
 
 function config.play.draw()
@@ -446,6 +492,8 @@ function update_tomatoes()
            abs(t.y - world.exit.y) < 2 then
             saved += 1
             world.numbercats[t.color] -= 1
+            world.saved[t.color] += 1
+            world.saved[1] += 1
             del(world.tomatoes, t)
             -- save particles!
             for i=1,crnd(20,30) do
@@ -772,7 +820,7 @@ end
 function draw_ui()
     local cell = 5
     for color = 5, 1, -1 do
-        if world.goal[color] then
+        if world.goal[color] and world.goal[color] > 0 then
             smoothrectfill(30 + 15*cell, 3, 40 + 15*cell, 13, 3, g_palette[color][2], 13)
             cell -= 1
         end
