@@ -648,10 +648,17 @@ function draw_menu()
                 spr(37, 100, 64)
                 palt()
                 corectfill(menu.rect_y0, menu.rect_y1, 35, 6, 0)
-                csprint("ld43     ", 32, 12, 11)
-                csprint("     game", 32, 12, 15)
-                csprint("play", 60, 9, 9)
-                csprint("levels", 78, 9, 9)
+                font_center(true)
+                font_outline(1.5, 0.5, 0.5)
+                font_scale(1.5)
+                print("ld43     ", 64, 24, 11)
+                print("     game", 64, 24, 15)
+                font_scale()
+                font_outline(1, 0.5, 0.5)
+                print("play", 64, 57, 9)
+                print("levels", 64, 75, 9)
+                font_outline()
+                font_center()
             else
                 csprint("levels", menu.high_y - 10, 9, 13)
                 local select = {4, 4, 4, 4, 4, 4}
@@ -837,6 +844,7 @@ function load_font(data, height)
     local ocol = 0
     local ox, oy = 0, 0
     local scale = 1
+    local center = false
     for i=1,#data do
         if type(data[i])=='string' then
             font[data[i]] = acc
@@ -853,6 +861,9 @@ function load_font(data, height)
     function font_scale(s)
         scale = s or 1
     end
+    function font_center(x)
+        center = x or false
+    end
     function print(str, x, y, col)
         local missing_args = not x or not y
         if missing_args then
@@ -861,7 +872,9 @@ function load_font(data, height)
             poke(m+1,x) poke(m+2,y)
         end
         col = col or peek(m)
+        local delta = min(1, 1/scale)
         local startx = x
+        local maxx = x
         local pixels = {}
         for i=1,#str+1 do
             local ch=sub(str,i,i)
@@ -870,28 +883,29 @@ function load_font(data, height)
                 y += height * scale
                 x = startx
             elseif data then
-                local dx = 0
-                while ceil(dx) < #data do
-                    for dy=0,height do
-                        if band(data[1 + flr(dx)],2^dy)!=0 then
-                            pixels[y + dy + flr(x + dx * scale) / 256] = true
+                for dx=0,#data,delta do
+                    for dy=0,height,delta do
+                        if band(data[1 + flr(dx)],2^flr(dy))!=0 then
+                            pixels[flr(y + dy * scale) + flr(x + dx * scale) / 256] = true
                         end
                     end
-                    dx += min(1, 1 / scale)
                 end
                 x += (#data + 1) * scale
+                maxx = max(x - scale, maxx)
             end
         end
-        -- print pixels
-        if outline > 0 then
+        -- print outline
+        local dx = center and flr((startx - maxx) / 2) or 0
+        if outline > 0 or ox != 0 or oy != 0 then
             for p,m in pairs(pixels) do
-                local x,y = p%1*256+ox, flr(p)+oy
+                local x,y = p%1*256+ox+dx, flr(p)+oy
                 rectfill(x-outline,y-outline,x+outline,y+outline,ocol)
-                --circfill(p%1*256, flr(p), outline, ocol)
+                --circfill(x, y, outline, ocol)
             end
         end
-        for p,m in pairs(pixels) do
-            pset(p%1*256, flr(p), col)
+        -- print actual text
+        for p,_ in pairs(pixels) do
+            pset(p%1*256+dx, flr(p), col)
         end
         poke(m, col)
         if missing_args then
