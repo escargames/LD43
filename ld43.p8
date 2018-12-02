@@ -386,6 +386,7 @@ function update_player()
         update_entity(world.player, btn(0), btn(1), jump(), btn(3))
         selectcolorscreen = false
     elseif btn(4) and state == "play" then
+        update_entity(world.player)
         selectcolorscreen = true
         if btnp(0) and state == "play" and selectcolor > 1 then
             selectcolor -= 1
