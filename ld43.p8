@@ -157,17 +157,6 @@ function ccrnd(tab)  -- takes a tab and choose randomly between the elements of 
   return tab[n]
 end
 
--- cool print (centered, outlined, scaled)
-
-function csprint(text, y, height, color)
-    font_outline(1)
-    font_scale(height / 9)
-    local x = 64 - (2 * #text - 0.5) * height / 6
-    print(text, x, y, color)
-    font_scale()
-    font_outline()
-end
-
 -- cool rectfill (centered, outlined)
 
 function corectfill(y0, y1, w, color1, color2)
