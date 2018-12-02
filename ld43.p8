@@ -147,8 +147,8 @@ end
 -- cool print (centered, outlined, scaled)
 
 function csprint(text, y, height, color)
-    font_scale(height / 8)
-    font_outline(2)
+    font_outline(1)
+    font_scale(height / 9)
     local x = 64 - (2 * #text - 0.5) * height / 6
     print(text, x, y, color)
     font_scale()
@@ -810,7 +810,8 @@ double_homicide = {
   128,3804,7014,8193,8193,"{",
   16352,254,"\\",
   8193,12342,8108,1600,64,"}",
-  192,96,32,64,64,32,"~"
+  192,96,32,64,64,32,"~",
+  128,384,384,12736,8128,8169,4092,2047,2046,4088,4064,4064,8032,7792,14384,8208,"★",
 }
 
 function load_font(data, height)
@@ -818,6 +819,7 @@ function load_font(data, height)
     local font = {}
     local acc = {}
     local outline = 0
+    local ocol = 0
     local scale = 1
     for i=1,#data do
         if type(data[i])=='string' then
@@ -827,8 +829,9 @@ function load_font(data, height)
             add(acc, data[i])
         end
     end
-    function font_outline(o)
+    function font_outline(o, c)
         outline = o or 0
+        ocol = c or 0
     end
     function font_scale(s)
         scale = s or 1
@@ -854,7 +857,7 @@ function load_font(data, height)
                 while ceil(dx) < #data do
                     for dy=0,height do
                         if band(data[1 + flr(dx)],2^dy)!=0 then
-                            pixels[y + dy + (x + dx * scale) / 256] = true
+                            pixels[y + dy + flr(x + dx * scale) / 256] = true
                         end
                     end
                     dx += min(1, 1 / scale)
@@ -865,7 +868,9 @@ function load_font(data, height)
         -- print pixels
         if outline > 0 then
             for p,m in pairs(pixels) do
-                circfill(p%1*256, flr(p), outline, 0)
+                local x,y = p%1*256, flr(p)
+                rectfill(x-outline,y-outline,x+outline,y+outline,ocol)
+                --circfill(p%1*256, flr(p), outline, ocol)
             end
         end
         for p,m in pairs(pixels) do
