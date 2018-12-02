@@ -158,6 +158,21 @@ function jump()
         return true end
 end
 
+-- cool btnp(): ignores autorepeat
+
+do
+    local ub = _update_buttons
+    local oldstate, state = 0, btn()
+    function _update_buttons()
+        ub()
+        oldstate, state = state, btn()
+    end
+    function cbtnp(i)
+        local bitfield = band(btnp(), bnot(oldstate))
+        return not i and bitfield or band(bitfield, 2^i) != 0
+    end
+end
+
 -- cool random
 
 function crnd(a, b)
@@ -255,7 +270,7 @@ function open_door()
     if menu.wait > 0 then
         menu.wait -= 1
     end
-    if btnp(g_btn_confirm) and not menu.scores then
+    if cbtnp(g_btn_confirm) and not menu.scores then
         if menu.rectpos == 1 then
             menu.opening = true
             music(-7, 5000)
@@ -266,7 +281,7 @@ function open_door()
             menu.help = true
         end
         sfx(g_sfx_menu)
-    elseif btnp(g_btn_back) and menu.scores then
+    elseif cbtnp(g_btn_back) and menu.scores then
         menu.scores = false
         menu.high_y = 78
         sfx(g_sfx_menu)
@@ -286,7 +301,7 @@ function open_door()
         elseif btnp(1) and menu.selectlevel < #g_levels then
             menu.selectlevel += 1
         end   
-        if btnp(g_btn_confirm) and menu.wait < 1 then
+        if cbtnp(g_btn_confirm) and menu.wait < 1 then
             menu.opening = true
             g_ong_level = menu.selectlevel
         end      
@@ -329,7 +344,7 @@ end
 --
 
 function config.ready.update()
-    if btnp(g_btn_confirm) then
+    if cbtnp(g_btn_confirm) then
         state = "play"
     end
 end
@@ -350,7 +365,7 @@ end
 --
 
 function config.finished.update()
-    if btnp(g_btn_confirm) then
+    if cbtnp(g_btn_confirm) then
         level += 1
         if level > #g_levels then
             -- beat the game...
@@ -703,7 +718,7 @@ end
 --
 
 function config.pause.update()
-    if btnp(g_btn_confirm) then
+    if cbtnp(g_btn_confirm) then
         keep_score(score)
         state = "menu"
         world = make_world(g_ong_level)
