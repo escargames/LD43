@@ -144,41 +144,22 @@ function ccrnd(tab)  -- takes a tab and choose randomly between the elements of 
   return tab[n]
 end
 
--- cool print (outlined, scaled)
-
-function cosprint(text, x, y, height, color)
-    -- save first line of image
-    local save={}
-    for i=1,96 do save[i]=peek4(0x6000+(i-1)*4) end
-    memset(0x6000,0,384)
-    print(text, 0, 0, 7)
-    -- restore image and save first line of sprites
-    for i=1,96 do local p=save[i] save[i]=peek4((i-1)*4) poke4((i-1)*4,peek4(0x6000+(i-1)*4)) poke4(0x6000+(i-1)*4, p) end
-    -- cool blit
-    pal() pal(7,0)
-    for i=-1,1 do for j=-1,1 do sspr(0, 0, 128, 6, x+i, y+j, 128 * height / 6, height) end end
-    pal(7,color)
-    sspr(0, 0, 128, 6, x, y, 128 * height / 6, height)
-    -- restore first line of sprites
-    for i=1,96 do poke4(0x0000+(i-1)*4, save[i]) end
-    pal()
-end
-
 -- cool print (centered, outlined, scaled)
 
 function csprint(text, y, height, color)
+    font_scale(height / 8)
+    font_outline(2)
     local x = 64 - (2 * #text - 0.5) * height / 6
-    cosprint(text, x, y, height, color)
+    print(text, x, y, color)
+    font_scale()
+    font_outline()
 end
 
 -- cool print (outlined)
 
-function coprint(text, x, y)
-    for i = -1,1 do
-        for j = -1,1 do
-            print(text, x+i, y+j, 0)
-        end
-    end
+function coprint(text, x, y, col)
+    print(text, x+1, y+1, 0)
+    print(text, x, y, col or 6)
 end
 
 -- cool rectfill (centered, outlined)
@@ -797,6 +778,8 @@ function load_font(data, height)
     local m = 0x5f25
     local font = {}
     local acc = {}
+    local outline = 0
+    local scale = 1
     for i=1,#data do
         if type(data[i])=='string' then
             font[data[i]] = acc
@@ -805,6 +788,12 @@ function load_font(data, height)
             add(acc, data[i])
         end
     end
+    function font_outline(o)
+        outline = o or 0
+    end
+    function font_scale(s)
+        scale = s or 1
+    end
     function print(str, x, y, col)
         local missing_args = not x or not y
         if missing_args then
@@ -812,26 +801,38 @@ function load_font(data, height)
         else
             poke(m+1,x) poke(m+2,y)
         end
-        poke(m, col or peek(m))
+        col = col or peek(m)
         local startx = x
+        local pixels = {}
         for i=1,#str+1 do
             local ch=sub(str,i,i)
             local data=font[ch]
-            if data then
-                for dx=1,#data do
+            if ch=="\n" or #ch==0 then
+                y += height * scale
+                x = startx
+            elseif data then
+                local dx = 0
+                while ceil(dx) < #data do
                     for dy=0,height do
-                        if band(data[dx],2^dy)!=0 then
-                            pset(x,y+dy)
+                        if band(data[1 + flr(dx)],2^dy)!=0 then
+                            pixels[y + dy + (x + dx * scale) / 256] = true
                         end
                     end
-                    x += 1
+                    dx += min(1, 1 / scale)
                 end
-                x += 1
-            elseif ch=="\n" or #ch==0 then
-                y += height
-                x = startx
+                x += (#data + 1) * scale
             end
         end
+        -- print pixels
+        if outline > 0 then
+            for p,m in pairs(pixels) do
+                circfill(p%1*256, flr(p), outline, 0)
+            end
+        end
+        for p,m in pairs(pixels) do
+            pset(p%1*256, flr(p), col)
+        end
+        poke(m, col)
         if missing_args then
             poke(m+1,x) poke(m+2,y)
         end
