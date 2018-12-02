@@ -682,7 +682,9 @@ function draw_menu()
                 for i = 1, 3 do
                     print(tostr(i), 3 + i * 29, 43, 5)
                     print(tostr(i+3), 2 + i * 30, 73, 5)
+                    font_outline(0.5, 0.5)
                     print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10) 
+                    font_outline()
                 end
             end
         end
@@ -710,13 +712,16 @@ function draw_world()
 end
 
 function draw_ui()
+    local cell = 5
+    for color = 5, 1, -1 do
+        if world.goal[color] then
+            smoothrectfill(30 + 15*cell, 3, 40 + 15*cell, 13, 3, g_palette[color][2], 13)
+            cell -= 1
+        end
+    end
     font_scale(0.8)
-    print("goal", 35, 3, 7)
+    print("goal", 20 + 15 * cell, 3, 7)
     font_scale()
-    smoothrectfill(60, 3, 70, 13, 3, g_palette[2][2], 5)
-    smoothrectfill(75, 3, 85, 13, 3, g_palette[3][2], 5)
-    smoothrectfill(90, 3, 100, 13, 3, g_palette[4][2], 5)
-    smoothrectfill(105, 3, 115, 13, 3, g_palette[5][2], 5)
     if selectcolor > 1 then
         local palette = g_palette[color[selectcolor]]
         smoothrectfill(6, 3, 22, 17, 5, palette[2], 6)
