@@ -674,13 +674,11 @@ function draw_menu()
             camera()
         end
     elseif state == "pause" then
-        csprint("game       ", 32, 12, 9)
-        csprint("    over", 32, 12, 11)
+        csprint("game      ", 32, 12, 9)
+        csprint("     over", 32, 12, 11)
         csprint("level "..menu.selectlevel, 52, 12, 3)
         for i = 1,3 do
-            font_scale(1.5)
-            coprint("★ ", 64 - 23 + (i - 1)*20, 80, 10)
-            font_scale()
+            coprint("★ ", 64 - 30 + (i - 1)*20, 80, 10)
         end
     end
 end
