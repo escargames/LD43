@@ -217,7 +217,7 @@ end
 function _init()
     cartdata("ld43_escargames")
     music(7, 8000)
-    state = "pause"
+    state = "menu"
     particles = {}
     world = make_world(0)
     menu = {
@@ -678,7 +678,9 @@ function draw_menu()
         csprint("     over", 32, 12, 11)
         csprint("level "..menu.selectlevel, 52, 12, 3)
         for i = 1,3 do
-            coprint("★ ", 64 - 30 + (i - 1)*20, 80, 10)
+            font_outline(0.5, 0.5)
+            print("★ ", 64 - 30 + (i - 1)*20, 80, 10)
+            font_outline()
         end
     end
 end
@@ -698,9 +700,8 @@ function draw_ui()
     csprint(tostr(flr(score).."     "), 2, 9, 13)
     if selectcolor > 1 then
         local palette = g_palette[color[selectcolor]]
-        rectfill(6, 3, 16, 13, palette[2])
-        rect(5, 2, 17, 14, 6)
-        print(tostr(numbercats[selectcolor]), 12 - #tostr(numbercats[selectcolor])*2, 6, palette[1])
+        smoothrectfill(6, 3, 22, 17, 5, palette[2], 6)
+        print(tostr(numbercats[selectcolor]), 12 - #tostr(numbercats[selectcolor])*2, 4, palette[1])
     end
 end
 
