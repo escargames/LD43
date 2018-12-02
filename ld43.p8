@@ -33,6 +33,8 @@ g_levels = {
     { 16, 0, 23, 16 }, -- level 3
 }
 
+g_ong_level = 0
+
 --
 -- levels
 --
@@ -90,14 +92,14 @@ end
 -- constructors
 --
 
-function new_game()
+function new_game(level)
     score = 0
     saved = 0
     particles = {}
     selectcolor = 1
     selectcolorscreen = false
     color = {1, 2, 3, 4, 5}
-    world = make_world(1)
+    world = make_world(level)
 end
 
 function new_entity(x, y, dir)
@@ -230,7 +232,7 @@ function _init()
     music(7, 8000)
     state = "menu"
     particles = {}
-    world = make_world(0)
+    world = make_world(g_ong_level)
     menu = {
         doordw = 128,
         doorx = 0,
@@ -241,7 +243,8 @@ function _init()
         rect_y1 = 72,
         scores = false,
         high_y = 78,
-        selectlevel = 1
+        selectlevel = 1,
+        wait = 0
     }
     jump_speed = 1
     fall_speed = 1
@@ -273,12 +276,16 @@ function config.menu.draw()
 end
 
 function open_door()
+    if menu.wait > 0 then
+        menu.wait -= 1
+    end
     if btnp(4) and not menu.scores then
         if menu.rectpos == 1 then
             menu.opening = true
             music(-7, 5000)
         elseif menu.rectpos == 2 then
             menu.scores = true
+            menu.wait = 10
         end
         sfx(g_sfx_menu)
     elseif btnp(5) and menu.scores then
@@ -301,8 +308,9 @@ function open_door()
         elseif btnp(1) and menu.selectlevel < #g_levels then
             menu.selectlevel += 1
         end   
-        if btnp(4) then
-            make_world(menu.selectlevel)
+        if btnp(4) and menu.wait < 1 then
+            menu.opening = true
+            g_ong_level = menu.selectlevel
         end      
     end
 
@@ -310,7 +318,7 @@ function open_door()
         menu.opening = false
         music(0,10000)
         state = "play"
-        new_game()
+        new_game(menu.selectlevel)
     end
 end
 
@@ -618,7 +626,7 @@ function config.pause.update()
     if btn(4) then
         keep_score(score)
         state = "menu"
-        world = make_world(0)
+        world = make_world(g_ong_level)
         sfx(g_sfx_menu)
         music(-0, 5000)
         music(7, 8000)
