@@ -217,7 +217,7 @@ end
 function _init()
     cartdata("ld43_escargames")
     music(7, 8000)
-    state = "menu"
+    state = "pause"
     particles = {}
     world = make_world(0)
     menu = {
@@ -674,9 +674,14 @@ function draw_menu()
             camera()
         end
     elseif state == "pause" then
-        csprint("game     ", 32, 12, 9)
-        csprint("     over", 32, 12, 11)
-        csprint("score "..tostr(score), 80, 9, 13)
+        csprint("game       ", 32, 12, 9)
+        csprint("    over", 32, 12, 11)
+        csprint("level "..menu.selectlevel, 52, 12, 3)
+        for i = 1,3 do
+            font_scale(1.5)
+            coprint("★ ", 64 - 23 + (i - 1)*20, 80, 10)
+            font_scale()
+        end
     end
 end
 
