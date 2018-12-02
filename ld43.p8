@@ -13,6 +13,11 @@ config = {
     pause = {},
 }
 
+g_btn_confirm = 4
+g_btn_back = 5
+g_btn_jump = 4
+g_btn_call = 5
+
 g_sfx_menu = 16
 g_sfx_jump = 10
 g_sfx_ladder = 13
@@ -29,8 +34,8 @@ g_fill_amount = 2
 g_palette = {{ 6, 5 }, { 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }}
 
 g_levels = {
-    { 0, 0, 16, 7,   "hello world!" }, -- level 1
-    { 0, 7, 16, 10,  "first sacrifice" }, -- level 2
+    { 0,  0, 16,  7, "hello world!" }, -- level 1
+    { 0,  7, 16,  9, "first sacrifice" }, -- level 2
     { 0, 16, 16, 13, "" }, -- level 3
     { 16, 0, 23, 16, "" }, -- test level
 }
@@ -147,7 +152,7 @@ end
 --
 
 function jump()
-    if btn(2) or btn(5) then
+    if btn(2) or btn(g_btn_jump) then
         return true end
 end
 
@@ -160,22 +165,6 @@ end
 function ccrnd(tab)  -- takes a tab and choose randomly between the elements of the table
   n = flr(crnd(1, #tab+1))
   return tab[n]
-end
-
--- cool rectfill (centered, outlined)
-
-function corectfill(y0, y1, w, color1, color2)
-    local x0 = 64 - ((w / 2))
-    local x1 = 64 + ((w / 2) - 1)
-    rectfill(x0, y0, x1, y1, color1)
-    rect(x0, y0, x1, y1, color2)
-end
-
--- cool rectfill (outlined)
-
-function orectfill(x0, y0, x1, y1, color1, color2)
-    rectfill(x0, y0, x1, y1, color1)
-    rect(x0, y0, x1, y1, color2)
 end
 
 -- rect with smooth sides
@@ -263,7 +252,7 @@ function open_door()
     if menu.wait > 0 then
         menu.wait -= 1
     end
-    if btnp(4) and not menu.scores then
+    if btnp(g_btn_confirm) and not menu.scores then
         if menu.rectpos == 1 then
             menu.opening = true
             music(-7, 5000)
@@ -274,7 +263,7 @@ function open_door()
             menu.help = true
         end
         sfx(g_sfx_menu)
-    elseif btnp(5) and menu.scores then
+    elseif btnp(g_btn_back) and menu.scores then
         menu.scores = false
         menu.high_y = 78
         sfx(g_sfx_menu)
@@ -294,7 +283,7 @@ function open_door()
         elseif btnp(1) and menu.selectlevel < #g_levels then
             menu.selectlevel += 1
         end   
-        if btnp(4) and menu.wait < 1 then
+        if btnp(g_btn_confirm) and menu.wait < 1 then
             menu.opening = true
             g_ong_level = menu.selectlevel
         end      
@@ -337,7 +326,7 @@ end
 --
 
 function config.ready.update()
-    if btnp(4) then
+    if btnp(g_btn_confirm) then
         state = "play"
     end
 end
@@ -408,10 +397,10 @@ function update_particles()
 end
 
 function update_player()
-    if not btn(4) then
+    if not btn(g_btn_call) then
         update_entity(world.player, btn(0), btn(1), jump(), btn(3))
         selectcolorscreen = false
-    elseif btn(4) and state == "play" then
+    elseif btn(g_btn_call) and state == "play" then
         update_entity(world.player)
         selectcolorscreen = true
         if btnp(0) and state == "play" and selectcolor > 1 then
@@ -655,7 +644,7 @@ end
 --
 
 function config.pause.update()
-    if btn(4) then
+    if btnp(g_btn_confirm) then
         keep_score(score)
         state = "menu"
         world = make_world(g_ong_level)
