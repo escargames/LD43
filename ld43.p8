@@ -226,7 +226,6 @@ function _init()
         rectpos = 1,
         rect_y0 = 55,
         rect_y1 = 72,
-        scores = false,
         high_y = 78,
         selectlevel = 1,
         wait = 0
@@ -271,6 +270,8 @@ function open_door()
         elseif menu.rectpos == 2 then
             menu.scores = true
             menu.wait = 10
+        elseif menu.rectpos == 3 then
+            menu.help = true
         end
         sfx(g_sfx_menu)
     elseif btnp(5) and menu.scores then
@@ -315,11 +316,14 @@ function rect_menu()
     elseif menu.rectpos == 2 then
         menu.rect_y0 = 78
         menu.rect_y1 = 95
+    elseif menu.rectpos == 3 then
+        menu.rect_y0 = 101
+        menu.rect_y1 = 118
     end
 end
 
 function choose_menu()
-    if btnp(3) and menu.rectpos < 2 then
+    if btnp(3) and menu.rectpos < 3 then
         menu.rectpos += 1
         sfx(g_sfx_menu)
     elseif btnp(2) and menu.rectpos > 1 then
@@ -703,6 +707,7 @@ function draw_menu()
                 font_outline(1, 0.5, 0.5)
                 print("play", 64, 57, 9)
                 print("levels", 64, 80, 9)
+                print("help", 64, 103, 9)
                 font_outline()
                 font_center(false)
             else
@@ -712,32 +717,38 @@ function draw_menu()
                 font_center()
                 font_outline()
                 local select = {}
-                if #g_levels < 7 then
-                    for i = 1, #g_levels do
-                    select[i] = 9
-                    select[menu.selectlevel] = 8
-                    smoothrectfill(-7 + 30*((i-1)%3 + 1), 40 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 60 + 30*flr((i-1)/3), 5, 15, select[i])
+                if menu.selectlevel < 7 then
+                    for i = 1, min(6, #g_levels) do
+                    select[i] = {15, 9}
+                    select[menu.selectlevel] = {14, 8}
+                    smoothrectfill(-7 + 30*((i-1)%3 + 1), 40 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 60 + 30*flr((i-1)/3), 5, select[i][1], select[i][2])
+                    font_center(true)
+                    print(tostr(i), 5 + 29*((i-1)%3 + 1), 43 + 30*flr((i-1)/3), 5)
+                    font_center()
                     end
-                    for i = 1, 3 do
-                        print(tostr(i), 3 + i * 29, 43, 5)
-                        print(tostr(i+3), 2 + i * 30, 73, 5)
-                        font_outline(0.5, 0.5)
-                        print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10) 
-                        font_outline()
+                elseif menu.selectlevel < 13 then
+                    for i = 7, min(12, #g_levels) do
+                        select[i] = {15, 9}
+                        select[menu.selectlevel] = {14, 8}
+                        smoothrectfill(-7 + 30*((i-7)%3 + 1), 40 + 30*flr((i-7)/3), 13 + 30*((i-7)%3 + 1), 60 + 30*flr((i-7)/3), 5, select[i][1], select[i][2])
+                        font_center(true)
+                        print(tostr(i), 5 + 29*((i-7)%3 + 1), 43 + 30*flr((i-7)/3), 5)
+                        font_center()
                     end
-                elseif #g_levels < 13 then
-                    for i = 1, 6 do
-                    select[i] = 9
-                    select[menu.selectlevel] = 8
-                    smoothrectfill(-7 + 30*((i-1)%3 + 1), 40 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 60 + 30*flr((i-1)/3), 5, 15, select[i])
+                elseif menu.selectlevel < 19 then
+                    for i = 13, min(19, #g_levels) do
+                        select[i] = {15, 9}
+                        select[menu.selectlevel] = {14, 8}
+                        smoothrectfill(-7 + 30*((i-13)%3 + 1), 40 + 30*flr((i-13)/3), 13 + 30*((i-13)%3 + 1), 60 + 30*flr((i-13)/3), 5, select[i][1], select[i][2])
+                        font_center(true)
+                        print(tostr(i), 5 + 29*((i-13)%3 + 1), 43 + 30*flr((i-13)/3), 5)
+                        font_center()
                     end
-                    for i = 1, 3 do
-                        print(tostr(i), 3 + i * 29, 43, 5)
-                        print(tostr(i+3), 2 + i * 30, 73, 5)
-                        font_outline(0.5, 0.5)
-                        print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10) 
-                        font_outline()
-                    end
+                end 
+                for i = 1, 3 do
+                    font_outline(0.5, 0.5)
+                    print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10) 
+                    font_outline()
                 end
             end
         end
@@ -747,7 +758,7 @@ function draw_menu()
         font_outline(1.5, 0.5, 0.5)
         print("game      ", 64, 32, 9)
         print("     over", 64, 32, 11)
-        print("level "..menu.selectlevel, 64, 52, 3)
+        print("level "..g_ong_level, 64, 52, 3)
         font_outline(0.5, 0.5)
         for i = 1,3 do
             print("★ ", 64 - 30 + (i - 1)*20, 80, 10)
