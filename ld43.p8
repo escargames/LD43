@@ -146,41 +146,22 @@ function ccrnd(tab)  -- takes a tab and choose randomly between the elements of 
   return tab[n]
 end
 
--- cool print (outlined, scaled)
-
-function cosprint(text, x, y, height, color)
-    -- save first line of image
-    local save={}
-    for i=1,96 do save[i]=peek4(0x6000+(i-1)*4) end
-    memset(0x6000,0,384)
-    print(text, 0, 0, 7)
-    -- restore image and save first line of sprites
-    for i=1,96 do local p=save[i] save[i]=peek4((i-1)*4) poke4((i-1)*4,peek4(0x6000+(i-1)*4)) poke4(0x6000+(i-1)*4, p) end
-    -- cool blit
-    pal() pal(7,0)
-    for i=-1,1 do for j=-1,1 do sspr(0, 0, 128, 6, x+i, y+j, 128 * height / 6, height) end end
-    pal(7,color)
-    sspr(0, 0, 128, 6, x, y, 128 * height / 6, height)
-    -- restore first line of sprites
-    for i=1,96 do poke4(0x0000+(i-1)*4, save[i]) end
-    pal()
-end
-
 -- cool print (centered, outlined, scaled)
 
 function csprint(text, y, height, color)
+    font_scale(height / 8)
+    font_outline(2)
     local x = 64 - (2 * #text - 0.5) * height / 6
-    cosprint(text, x, y, height, color)
+    print(text, x, y, color)
+    font_scale()
+    font_outline()
 end
 
 -- cool print (outlined)
 
-function coprint(text, x, y)
-    for i = -1,1 do
-        for j = -1,1 do
-            print(text, x+i, y+j, 0)
-        end
-    end
+function coprint(text, x, y, col)
+    print(text, x+1, y+1, 0)
+    print(text, x, y, col or 6)
 end
 
 -- cool rectfill (centered, outlined)
@@ -768,6 +749,147 @@ function draw_debug()
         print("tomato "..t.x.." "..t.y, 5, j)
     end)
 end
+
+--
+-- font
+--
+
+double_homicide = {
+  3568,1084,"!",
+  12,24,0,28,"\"",
+  288,3872,496,300,1952,508,288,32,"#",
+  608,1656,3212,16382,1928,912,"$",
+  24,52,7196,904,224,796,1156,1920,384,"%",
+  3600,4024,1124,636,964,896,1600,1056,"&",
+  24,12,"'",
+  992,3128,4108,2,"(",
+  2,8204,6192,1984,")",
+  88,48,252,48,40,"*",
+  0,0,0,0,0," ",
+  7168,1536,",",
+  128,128,192,64,"-",
+  1536,512,".",
+  6144,1792,192,48,12,2,"/",
+  992,3128,6156,3612,1008,"0",
+  16,3992,508,14,"1",
+  1024,1584,1816,3468,2252,2168,"2",
+  512,3608,3144,1764,956,272,"3",
+  384,496,156,3968,480,128,"4",
+  864,1656,3148,1612,968,392,"5",
+  992,1784,3276,1664,896,"6",
+  8,3848,492,60,12,"7",
+  776,1948,3308,6392,1936,768,"8",
+  32,112,88,4040,252,76,"9",
+  1600,608,":",
+  3136,1632,";",
+  128,192,192,416,288,272,"<",
+  288,288,160,160,128,"=",
+  32,288,352,448,192,128,128,">",
+  24,3532,1126,31,"?",
+  8064,12384,10032,3224,1740,780,1816,496,"@",
+  7424,3968,496,204,504,1984,64,"a",
+  3584,2044,1132,1656,984,384,128,"b",
+  1792,3552,3128,1548,796,"c",
+  3840,4092,1052,568,480,192,"d",
+  8136,4092,3292,1096,1096,8,"e",
+  124,4092,204,72,72,8,"f",
+  3968,4080,3128,1164,1676,8088,"g",
+  1016,8160,128,192,8176,4092,64,"h",
+  8176,252,"i",
+  520,3080,7692,2044,12,4,"j",
+  4032,1020,1632,3120,4104,"k",
+  4064,4092,1024,1536,512,512,"l",
+  3968,1008,60,496,96,1016,8128,"m",
+  8128,1008,120,480,3968,1020,"n",
+  2016,3128,1548,792,496,"o",
+  316,8168,200,104,56,16,"p",
+  480,1848,3084,1928,3856,6624,"q",
+  60,4072,456,360,824,528,"r",
+  1632,3312,6360,3980,816,"s",
+  24,3992,508,8,4,"t",
+  508,2016,1536,1792,960,252,"u",
+  60,480,3840,960,224,24,"v",
+  60,1008,7680,3840,448,384,3840,992,56,"w",
+  2060,1848,480,1008,3608,4096,"x",
+  24,48,7776,1008,28,"y",
+  2064,3608,3464,1132,1564,516,"z",
+  8190,6146,3078,1028,"[",
+  4100,4102,8190,"]",
+  24,12,6,12,48,"^",
+  4096,4096,2048,2048,2048,"`",
+  4,12,16,"_",
+  128,3804,7014,8193,8193,"{",
+  16352,254,"\\",
+  8193,12342,8108,1600,64,"}",
+  192,96,32,64,64,32,"~"
+}
+
+function load_font(data, height)
+    local m = 0x5f25
+    local font = {}
+    local acc = {}
+    local outline = 0
+    local scale = 1
+    for i=1,#data do
+        if type(data[i])=='string' then
+            font[data[i]] = acc
+            acc = {}
+        else
+            add(acc, data[i])
+        end
+    end
+    function font_outline(o)
+        outline = o or 0
+    end
+    function font_scale(s)
+        scale = s or 1
+    end
+    function print(str, x, y, col)
+        local missing_args = not x or not y
+        if missing_args then
+            x,y = peek(m+1),peek(m+2)
+        else
+            poke(m+1,x) poke(m+2,y)
+        end
+        col = col or peek(m)
+        local startx = x
+        local pixels = {}
+        for i=1,#str+1 do
+            local ch=sub(str,i,i)
+            local data=font[ch]
+            if ch=="\n" or #ch==0 then
+                y += height * scale
+                x = startx
+            elseif data then
+                local dx = 0
+                while ceil(dx) < #data do
+                    for dy=0,height do
+                        if band(data[1 + flr(dx)],2^dy)!=0 then
+                            pixels[y + dy + (x + dx * scale) / 256] = true
+                        end
+                    end
+                    dx += min(1, 1 / scale)
+                end
+                x += (#data + 1) * scale
+            end
+        end
+        -- print pixels
+        if outline > 0 then
+            for p,m in pairs(pixels) do
+                circfill(p%1*256, flr(p), outline, 0)
+            end
+        end
+        for p,m in pairs(pixels) do
+            pset(p%1*256, flr(p), col)
+        end
+        poke(m, col)
+        if missing_args then
+            poke(m+1,x) poke(m+2,y)
+        end
+    end
+end
+
+load_font(double_homicide,14)
 
 __gfx__
 00000000424204404444444444450000000054540000000000000000555d55d50000000000004454444500004545000000005444444444544444545445450000
