@@ -679,6 +679,19 @@ function draw_menu()
                         print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10) 
                         font_outline()
                     end
+                elseif #g_levels < 13 then
+                    for i = 1, 6 do
+                    select[i] = 9
+                    select[menu.selectlevel] = 8
+                    smoothrectfill(-7 + 30*((i-1)%3 + 1), 40 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 60 + 30*flr((i-1)/3), 5, 15, select[i])
+                    end
+                    for i = 1, 3 do
+                        print(tostr(i), 3 + i * 29, 43, 5)
+                        print(tostr(i+3), 2 + i * 30, 73, 5)
+                        font_outline(0.5, 0.5)
+                        print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10) 
+                        font_outline()
+                    end
                 end
             end
         end
