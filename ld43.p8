@@ -312,8 +312,8 @@ function rect_menu()
         menu.rect_y0 = 55
         menu.rect_y1 = 72
     elseif menu.rectpos == 2 then
-        menu.rect_y0 = 73
-        menu.rect_y1 = 90
+        menu.rect_y0 = 78
+        menu.rect_y1 = 95
     end
 end
 
@@ -649,9 +649,8 @@ function draw_menu()
             if not menu.scores then
                 palt(0, false)
                 palt(14, true)
-                spr(37, 100, 64)
                 palt()
-                corectfill(menu.rect_y0, menu.rect_y1, 35, 6, 0)
+                smoothrectfill(38, menu.rect_y0, 90, menu.rect_y1, 7, 6, 0)
                 font_center(true)
                 font_outline(1.5, 0.5, 0.5)
                 font_scale(1.5)
@@ -660,27 +659,29 @@ function draw_menu()
                 font_scale()
                 font_outline(1, 0.5, 0.5)
                 print("play", 64, 57, 9)
-                print("levels", 64, 75, 9)
+                print("levels", 64, 80, 9)
                 font_outline()
                 font_center(false)
             else
                 font_center(true)
-                font_outline(1.5, 0.5, 0.5)
+                font_outline(1)
                 print("levels", 64, menu.high_y - 10, 13)
                 font_center()
                 font_outline()
-                local select = {4, 4, 4, 4, 4, 4}
+                local select = {9, 9, 9, 9, 9, 9}
                 select[menu.selectlevel] = 8
-                smoothrectfill(23, 35, 43, 55, 5, 15, select[1])
-                smoothrectfill(53, 35, 73, 55, 5, 15, select[2])
-                smoothrectfill(83, 35, 103, 55, 5, 15, select[3])
-                smoothrectfill(23, 65, 43, 85, 5, 15, select[4])
-                smoothrectfill(53, 65, 73, 85, 5, 15, select[5])
-                smoothrectfill(83, 65, 103, 85, 5, 15, select[6])
+                smoothrectfill(23, 40, 43, 60, 5, 15, select[1])
+                smoothrectfill(53, 40, 73, 60, 5, 15, select[2])
+                smoothrectfill(83, 40, 103, 60, 5, 15, select[3])
+                smoothrectfill(23, 70, 43, 90, 5, 15, select[4])
+                smoothrectfill(53, 70, 73, 90, 5, 15, select[5])
+                smoothrectfill(83, 70, 103, 90, 5, 15, select[6])
                 for i = 1, 3 do
-                    print(tostr(i), 3 + i * 29, 38, 5)
-                    print(tostr(i+3), 2 + i * 30, 68, 5)
-                    --cosprint("★ ", 64 - 23 + (i - 1)*20, 95, 6, 10) 
+                    print(tostr(i), 3 + i * 29, 43, 5)
+                    print(tostr(i+3), 2 + i * 30, 73, 5)
+                    font_outline(0.5, 0.5)
+                    print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10) 
+                    font_outline()
                 end
             end
         end
@@ -713,13 +714,16 @@ function draw_world()
 end
 
 function draw_ui()
+    local cell = 5
+    for color = 5, 1, -1 do
+        if world.goal[color] then
+            smoothrectfill(30 + 15*cell, 3, 40 + 15*cell, 13, 3, g_palette[color][2], 13)
+            cell -= 1
+        end
+    end
     font_scale(0.8)
-    print("goal", 35, 3, 7)
+    print("goal", 20 + 15 * cell, 3, 7)
     font_scale()
-    smoothrectfill(60, 3, 70, 13, 3, g_palette[2][2], 5)
-    smoothrectfill(75, 3, 85, 13, 3, g_palette[3][2], 5)
-    smoothrectfill(90, 3, 100, 13, 3, g_palette[4][2], 5)
-    smoothrectfill(105, 3, 115, 13, 3, g_palette[5][2], 5)
     if selectcolor > 1 then
         local palette = g_palette[color[selectcolor]]
         smoothrectfill(6, 3, 22, 17, 5, palette[2], 6)
