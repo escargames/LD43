@@ -836,6 +836,7 @@ function load_font(data, height)
     local acc = {}
     local outline = 0
     local ocol = 0
+    local ox, oy = 0, 0
     local scale = 1
     for i=1,#data do
         if type(data[i])=='string' then
@@ -845,8 +846,9 @@ function load_font(data, height)
             add(acc, data[i])
         end
     end
-    function font_outline(o, c)
+    function font_outline(o, x, y, c)
         outline = o or 0
+        ox, oy = x or 0, y or 0
         ocol = c or 0
     end
     function font_scale(s)
@@ -884,7 +886,7 @@ function load_font(data, height)
         -- print pixels
         if outline > 0 then
             for p,m in pairs(pixels) do
-                local x,y = p%1*256, flr(p)
+                local x,y = p%1*256+ox, flr(p)+oy
                 rectfill(x-outline,y-outline,x+outline,y+outline,ocol)
                 --circfill(p%1*256, flr(p), outline, ocol)
             end
