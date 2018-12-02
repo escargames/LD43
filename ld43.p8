@@ -411,14 +411,15 @@ end
 
 function update_player()
     if not btn(4) then
+        selectcolor = 1
         update_entity(world.player, btn(0), btn(1), jump(), btn(3))
         selectcolorscreen = false
-    elseif btn(4) and state == "play" then
+    elseif btn(4) then
         update_entity(world.player)
         selectcolorscreen = true
-        if btnp(0) and state == "play" and selectcolor > 1 then
+        if btnp(0) and selectcolor > 1 then
             selectcolor -= 1
-        elseif btnp(1) and state == "play" and selectcolor < #num then
+        elseif btnp(1) and selectcolor < #num then
             selectcolor += 1
         end
         world.player.call = num[selectcolor]
