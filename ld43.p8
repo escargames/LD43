@@ -26,6 +26,8 @@ g_fill_amount = 2
 
 g_palette = {{ 6, 5 }, { 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }}
 
+g_levelmax = 6
+
 --
 -- levels
 --
@@ -227,7 +229,8 @@ function _init()
         rect_y0 = 55,
         rect_y1 = 72,
         scores = false,
-        high_y = 78
+        high_y = 78,
+        selectlevel = 1
     }
     jump_speed = 1
     fall_speed = 1
@@ -257,6 +260,7 @@ function config.menu.draw()
     cls(0)
     draw_world()
     draw_menu()
+    --draw_debug()
 end
 
 function open_door()
@@ -268,7 +272,7 @@ function open_door()
             menu.scores = true
         end
         sfx(g_sfx_menu)
-    elseif btnp(4) and menu.scores then
+    elseif btnp(5) and menu.scores then
         menu.scores = false
         menu.high_y = 78
         sfx(g_sfx_menu)
@@ -283,6 +287,14 @@ function open_door()
         if menu.high_y > 30 then
             menu.high_y -= 2
         end
+        if btnp(0) and menu.selectlevel > 1 then
+            menu.selectlevel -= 1
+        elseif btnp(1) and menu.selectlevel < g_levelmax then
+            menu.selectlevel += 1
+        end   
+        if btnp(4) then
+            make_world(menu.selectlevel)
+        end      
     end
 
     if menu.doordw < 2 then
@@ -641,15 +653,18 @@ function draw_menu()
                 csprint("levels", 78, 9, 9)
             else
                 csprint("levels", menu.high_y - 10, 9, 13)
-                smoothrectfill(23, 35, 43, 55, 5, 15, 4)
-                smoothrectfill(53, 35, 73, 55, 5, 15, 4)
-                smoothrectfill(83, 35, 103, 55, 5, 15, 4)
-                smoothrectfill(23, 65, 43, 85, 5, 15, 4)
-                smoothrectfill(53, 65, 73, 85, 5, 15, 4)
-                smoothrectfill(83, 65, 103, 85, 5, 15, 4)
+                local select = {4, 4, 4, 4, 4, 4}
+                select[menu.selectlevel] = 8
+                smoothrectfill(23, 35, 43, 55, 5, 15, select[1])
+                smoothrectfill(53, 35, 73, 55, 5, 15, select[2])
+                smoothrectfill(83, 35, 103, 55, 5, 15, select[3])
+                smoothrectfill(23, 65, 43, 85, 5, 15, select[4])
+                smoothrectfill(53, 65, 73, 85, 5, 15, select[5])
+                smoothrectfill(83, 65, 103, 85, 5, 15, select[6])
                 for i = 1, 3 do
-                    print(tostr(i), 2 + i * 30, 38, 5)
+                    print(tostr(i), 3 + i * 29, 38, 5)
                     print(tostr(i+3), 2 + i * 30, 68, 5)
+                    --cosprint("★ ", 64 - 23 + (i - 1)*20, 95, 6, 10) 
                 end
             end
 
@@ -662,11 +677,6 @@ function draw_menu()
         csprint("game     ", 32, 12, 9)
         csprint("     over", 32, 12, 11)
         csprint("score "..tostr(score), 80, 9, 13)
-
-        camera(0, 14*8)
-        draw_particles()
-        draw_player()
-        camera()
     end
 end
 
@@ -732,11 +742,12 @@ function draw_tomatoes()
 end
 
 function draw_debug()
-    local j = 12
-    foreach(world.tomatoes, function(t)
-        j += 6
-        print("tomato "..t.x.." "..t.y, 5, j)
-    end)
+    print("selectlevel "..tostr(menu.selectlevel), 5, 5, 7)
+    --local j = 12
+    --foreach(world.tomatoes, function(t)
+        --j += 6
+        --print("tomato "..t.x.." "..t.y, 5, j)
+    --end)
 end
 
 --
