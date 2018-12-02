@@ -386,6 +386,7 @@ function update_player()
         update_entity(world.player, btn(0), btn(1), jump(), btn(3))
         selectcolorscreen = false
     elseif btn(4) and state == "play" then
+        update_entity(world.player)
         selectcolorscreen = true
         if btnp(0) and state == "play" and selectcolor > 1 then
             selectcolor -= 1
@@ -653,10 +654,17 @@ function draw_menu()
                 spr(37, 100, 64)
                 palt()
                 corectfill(menu.rect_y0, menu.rect_y1, 35, 6, 0)
-                csprint("ld43     ", 32, 12, 11)
-                csprint("     game", 32, 12, 15)
-                csprint("play", 60, 9, 9)
-                csprint("levels", 78, 9, 9)
+                font_center(true)
+                font_outline(1.5, 0.5, 0.5)
+                font_scale(1.5)
+                print("ld43     ", 64, 24, 11)
+                print("     game", 64, 24, 15)
+                font_scale()
+                font_outline(1, 0.5, 0.5)
+                print("play", 64, 57, 9)
+                print("levels", 64, 75, 9)
+                font_outline()
+                font_center(false)
             else
                 csprint("levels", menu.high_y - 10, 9, 13)
                 local select = {4, 4, 4, 4, 4, 4}
@@ -707,7 +715,9 @@ function draw_ui()
     if selectcolor > 1 then
         local palette = g_palette[color[selectcolor]]
         smoothrectfill(6, 3, 22, 17, 5, palette[2], 6)
-        print(tostr(numbercats[selectcolor]), 12 - #tostr(numbercats[selectcolor])*2, 4, palette[1])
+        font_center(true)
+        print(numbercats[selectcolor], 14, 4, palette[1])
+        font_center(false)
     end
 end
 
@@ -760,7 +770,7 @@ function draw_tomatoes()
 end
 
 function draw_debug()
-    print("selectlevel "..tostr(menu.selectlevel), 5, 5, 7)
+    pico8_print("selectlevel "..tostr(menu.selectlevel), 5, 5, 7)
     --local j = 12
     --foreach(world.tomatoes, function(t)
         --j += 6
@@ -844,6 +854,7 @@ double_homicide = {
 }
 
 function load_font(data, height)
+    pico8_print = pico8_print or print
     local m = 0x5f25
     local font = {}
     local acc = {}
@@ -851,6 +862,7 @@ function load_font(data, height)
     local ocol = 0
     local ox, oy = 0, 0
     local scale = 1
+    local center = false
     for i=1,#data do
         if type(data[i])=='string' then
             font[data[i]] = acc
@@ -867,6 +879,9 @@ function load_font(data, height)
     function font_scale(s)
         scale = s or 1
     end
+    function font_center(x)
+        center = x or false
+    end
     function print(str, x, y, col)
         local missing_args = not x or not y
         if missing_args then
@@ -875,41 +890,48 @@ function load_font(data, height)
             poke(m+1,x) poke(m+2,y)
         end
         col = col or peek(m)
-        local startx = x
+        str = tostr(str)
+        local delta = min(1, 1/scale)
+        local startx,starty = x,y
         local pixels = {}
+        x,xmax,y = 16,16,16
         for i=1,#str+1 do
             local ch=sub(str,i,i)
             local data=font[ch]
             if ch=="\n" or #ch==0 then
                 y += height * scale
-                x = startx
+                x = 16
             elseif data then
-                local dx = 0
-                while ceil(dx) < #data do
-                    for dy=0,height do
-                        if band(data[1 + flr(dx)],2^dy)!=0 then
-                            pixels[y + dy + flr(x + dx * scale) / 256] = true
+                for dx=0,#data,delta do
+                    for dy=0,height,delta do
+                        if band(data[1 + flr(dx)],2^flr(dy))!=0 then
+                            pixels[flr(y + dy * scale) + flr(x + dx * scale) / 256] = true
                         end
                     end
-                    dx += min(1, 1 / scale)
                 end
                 x += (#data + 1) * scale
+                xmax = max(x - scale, xmax)
             end
         end
-        -- print pixels
-        if outline > 0 then
+        -- print outline
+        local dx = startx - 16
+        local dy = starty - 16
+        if center then dx += flr((16 - xmax + 0.5) / 2) end
+        if outline > 0 or ox != 0 or oy != 0 then
             for p,m in pairs(pixels) do
-                local x,y = p%1*256+ox, flr(p)+oy
+                local x,y = dx + ox + p%1*256, dy + oy + flr(p)
                 rectfill(x-outline,y-outline,x+outline,y+outline,ocol)
-                --circfill(p%1*256, flr(p), outline, ocol)
+                --circfill(x, y, outline, ocol)
             end
         end
-        for p,m in pairs(pixels) do
-            pset(p%1*256, flr(p), col)
+        -- print actual text
+        for p,_ in pairs(pixels) do
+            pset(dx + p%1*256, dy + flr(p), col)
         end
+        -- save state
         poke(m, col)
         if missing_args then
-            poke(m+1,x) poke(m+2,y)
+            poke(m+1,startx - 16 + x) poke(m+2,starty - 16 + y)
         end
     end
 end
