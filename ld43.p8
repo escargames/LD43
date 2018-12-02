@@ -756,7 +756,7 @@ function draw_tomatoes()
 end
 
 function draw_debug()
-    print("selectlevel "..tostr(menu.selectlevel), 5, 5, 7)
+    pico8_print("selectlevel "..tostr(menu.selectlevel), 5, 5, 7)
     --local j = 12
     --foreach(world.tomatoes, function(t)
         --j += 6
@@ -840,6 +840,7 @@ double_homicide = {
 }
 
 function load_font(data, height)
+    pico8_print = pico8_print or print
     local m = 0x5f25
     local font = {}
     local acc = {}
@@ -877,15 +878,15 @@ function load_font(data, height)
         col = col or peek(m)
         str = tostr(str)
         local delta = min(1, 1/scale)
-        local startx = x
-        local maxx = x
+        local startx,starty = x,y
         local pixels = {}
+        x,xmax,y = 16,16,16
         for i=1,#str+1 do
             local ch=sub(str,i,i)
             local data=font[ch]
             if ch=="\n" or #ch==0 then
                 y += height * scale
-                x = startx
+                x = 16
             elseif data then
                 for dx=0,#data,delta do
                     for dy=0,height,delta do
@@ -895,25 +896,28 @@ function load_font(data, height)
                     end
                 end
                 x += (#data + 1) * scale
-                maxx = max(x - scale, maxx)
+                xmax = max(x - scale, xmax)
             end
         end
         -- print outline
-        local dx = center and flr((startx - maxx + 0.5) / 2) or 0
+        local dx = startx - 16
+        local dy = starty - 16
+        if center then dx += flr((16 - xmax + 0.5) / 2) end
         if outline > 0 or ox != 0 or oy != 0 then
             for p,m in pairs(pixels) do
-                local x,y = p%1*256+ox+dx, flr(p)+oy
+                local x,y = dx + ox + p%1*256, dy + oy + flr(p)
                 rectfill(x-outline,y-outline,x+outline,y+outline,ocol)
                 --circfill(x, y, outline, ocol)
             end
         end
         -- print actual text
         for p,_ in pairs(pixels) do
-            pset(p%1*256+dx, flr(p), col)
+            pset(dx + p%1*256, dy + flr(p), col)
         end
+        -- save state
         poke(m, col)
         if missing_args then
-            poke(m+1,x) poke(m+2,y)
+            poke(m+1,startx - 16 + x) poke(m+2,starty - 16 + y)
         end
     end
 end
