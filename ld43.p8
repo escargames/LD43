@@ -260,6 +260,7 @@ function config.menu.draw()
     cls(0)
     draw_world()
     draw_menu()
+    --draw_debug()
 end
 
 function open_door()
@@ -271,7 +272,7 @@ function open_door()
             menu.scores = true
         end
         sfx(g_sfx_menu)
-    elseif btnp(4) and menu.scores then
+    elseif btnp(5) and menu.scores then
         menu.scores = false
         menu.high_y = 78
         sfx(g_sfx_menu)
@@ -290,7 +291,10 @@ function open_door()
             menu.selectlevel -= 1
         elseif btnp(1) and menu.selectlevel < g_levelmax then
             menu.selectlevel += 1
-        end           
+        end   
+        if btnp(4) then
+            make_world(menu.selectlevel)
+        end      
     end
 
     if menu.doordw < 2 then
@@ -658,9 +662,9 @@ function draw_menu()
                 smoothrectfill(53, 65, 73, 85, 5, 15, select[5])
                 smoothrectfill(83, 65, 103, 85, 5, 15, select[6])
                 for i = 1, 3 do
-                    print(tostr(i), 2 + i * 30, 38, 5)
+                    print(tostr(i), 3 + i * 29, 38, 5)
                     print(tostr(i+3), 2 + i * 30, 68, 5)
-                    cosprint("★ ", 64 - 23 + (i - 1)*20, 95, 6, 10) 
+                    --cosprint("★ ", 64 - 23 + (i - 1)*20, 95, 6, 10) 
                 end
             end
 
@@ -673,11 +677,6 @@ function draw_menu()
         csprint("game     ", 32, 12, 9)
         csprint("     over", 32, 12, 11)
         csprint("score "..tostr(score), 80, 9, 13)
-
-        camera(0, 14*8)
-        draw_particles()
-        draw_player()
-        camera()
     end
 end
 
@@ -743,11 +742,12 @@ function draw_tomatoes()
 end
 
 function draw_debug()
-    local j = 12
-    foreach(world.tomatoes, function(t)
-        j += 6
-        print("tomato "..t.x.." "..t.y, 5, j)
-    end)
+    print("selectlevel "..tostr(menu.selectlevel), 5, 5, 7)
+    --local j = 12
+    --foreach(world.tomatoes, function(t)
+        --j += 6
+        --print("tomato "..t.x.." "..t.y, 5, j)
+    --end)
 end
 
 --
