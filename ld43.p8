@@ -708,7 +708,13 @@ function draw_world()
 end
 
 function draw_ui()
-    csprint(tostr(flr(score).."     "), 2, 9, 13)
+    font_scale(0.8)
+    print("goal", 35, 3, 7)
+    font_scale()
+    smoothrectfill(60, 3, 70, 13, 3, g_palette[2][2], 5)
+    smoothrectfill(75, 3, 85, 13, 3, g_palette[3][2], 5)
+    smoothrectfill(90, 3, 100, 13, 3, g_palette[4][2], 5)
+    smoothrectfill(105, 3, 115, 13, 3, g_palette[5][2], 5)
     if selectcolor > 1 then
         local palette = g_palette[color[selectcolor]]
         smoothrectfill(6, 3, 22, 17, 5, palette[2], 6)
