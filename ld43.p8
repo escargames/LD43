@@ -278,7 +278,6 @@ end
 function _init()
     poke(0x5f34, 1)
     cartdata("ld43_escargames")
-    music(7, 8000)
     state = "intro"
     scroll = 0
     particles = {}
@@ -374,7 +373,6 @@ function open_door()
         sfx(g_sfx_confirm)
         if menu.rectpos == 1 then
             menu.opening = true
-            music(-7, 5000)
         elseif menu.rectpos == 2 then
             state = "levels"
         elseif menu.rectpos == 3 then
@@ -389,7 +387,6 @@ function open_door()
 
     if menu.doordw < 2 then
         menu.opening = false
-        music(0,10000)
         level = menu.selectlevel
         new_game()
         state = "ready"
@@ -915,8 +912,6 @@ function config.pause.update()
         state = "menu"
         world = make_world(g_ong_level)
         sfx(g_sfx_menu)
-        music(-0, 5000)
-        music(7, 8000)
     end
 end
 
