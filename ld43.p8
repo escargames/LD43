@@ -279,6 +279,7 @@ function _init()
     poke(0x5f34, 1)
     cartdata("ld43_escargames")
     state = "intro"
+    music(0)
     scroll = 0
     particles = {}
     num = {1}
