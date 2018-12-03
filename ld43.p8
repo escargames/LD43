@@ -278,6 +278,7 @@ function _init()
     poke(0x5f34, 1)
     cartdata("ld43_escargames")
     state = "intro"
+    music(0)
     scroll = 0
     particles = {}
     num = {1}
@@ -543,6 +544,12 @@ function update_player()
         end
         world.player.call = num[selectcolor]
     end
+     -- did we die in spikes or some other trap?
+    if trap(world.player.x, world.player.y) then
+        sfx(g_sfx_death)
+        state = "finished"
+    death_particles(world.player.x, world.player.y)
+    end
 end
 
 function update_numbercats()
@@ -609,15 +616,7 @@ function update_cats()
             s.fill = min(s.fill + g_fill_amount, 8)
             world.numbercats[t.color] -= 1
             del(world.cats, t)
-            -- death particles!
-            for i=1,crnd(20,30) do
-                add(particles, { x = t.x, y = t.y,
-                                 vx = crnd(-.75,.75),
-                                 vy = crnd(-.75,.75),
-                                 gravity = 1/32,
-                                 age = 20 + rnd(5), color = {2,8,14},
-                                 r = { 0.5, 1.5, 0.5 } })
-            end
+            death_particles(t.x, t.y)
         end
     end)
 end
@@ -775,6 +774,17 @@ end
 function trap(x,y)
     local m = mget(x/8, y/8)
     return fget(m, 5)
+end
+
+function death_particles(x, y)
+    for i=1,crnd(20,30) do
+        add(particles, { x = x, y = y,
+                            vx = crnd(-.75,.75),
+                            vy = crnd(-.75,.75),
+                            gravity = 1/32,
+                            age = 20 + rnd(5), color = {2,8,14},
+                            r = { 0.5, 1.5, 0.5 } })
+    end
 end
 
 function ladder(x,y)
@@ -1010,11 +1020,11 @@ function draw_ui()
             cell += 1
         end
     end
-    if selectcolor > 1 then
-        local palette = g_palette[num[selectcolor]]
-        smoothrectfill(6, 3, 22, 17, 5, palette[2], 6)
-        print(world.numbercats[num[selectcolor]], 14, 4, palette[1])
-    end
+    --if selectcolor > 1 then
+        --local palette = g_palette[num[selectcolor]]
+        --smoothrectfill(6, 3, 22, 17, 5, palette[2], 6)
+        --print(world.numbercats[num[selectcolor]], 14, 4, palette[1])
+    --end
     font_outline()
 end
 
@@ -1024,15 +1034,17 @@ function draw_player()
     spr(80 + 2 * flr(player.anim / 16 % 2), player.x - 8, player.y - 11, 2, 2, player.dir)
     if selectcolorscreen then
         for i = 1, #num do
-            local p = mid(world.x * 8 + #num*5, player.x, (world.x + world.w) * 8 - #num*5) - (#num-1)*5 + (i-1)*10
+            local p = mid(world.x * 8 + #num*5, player.x, (world.x + world.w) * 8 - #num*5) - (#num-1)*7 + (i-1)*14
             local palette = g_palette[num[i]]
-            rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, palette[2])
+            rectfill((p - 4), player.y - 20, (p + 4), player.y - 12, palette[2])
             if i == 1 then
-                line((p - 2), player.y - 16, (p + 2), player.y - 12, 7)
-                line((p + 2), player.y - 16, (p - 2), player.y - 12, 7)
+                line((p - 4), player.y - 20, (p + 4), player.y - 12, 7)
+                line((p + 4), player.y - 20, (p - 4), player.y - 12, 7)
+            else
+                pico8_print(world.numbercats[num[i]], p - 1, player.y - 18, palette[1])
             end
             if i == selectcolor then
-                rect((p - 3), player.y - 17, (p + 3), player.y - 11, 6)
+                rect((p - 5), player.y - 21, (p + 5), player.y - 11, 6)
             end
         end
     end
