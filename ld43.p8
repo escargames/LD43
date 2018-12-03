@@ -7,6 +7,7 @@ __lua__
 --
 
 config = {
+    intro = {},
     menu = {},
     ready = {},
     play = {},
@@ -19,11 +20,19 @@ g_btn_back = 5
 g_btn_jump = 4
 g_btn_call = 5
 
-g_sfx_menu = 16
+-- menu navigation sfx
+g_sfx_navigate = 15
+g_sfx_confirm = 16
+
+-- gameplay sfx
+g_sfx_death = 8
+g_sfx_happy = 7
+g_sfx_saved = 9
 g_sfx_jump = 10
 g_sfx_ladder = 13
 g_sfx_footstep = 11
 
+-- sprites
 g_spr_player = 18
 g_spr_follower = 20
 g_spr_exit = 26
@@ -33,6 +42,26 @@ g_spr_count = 48
 g_fill_amount = 2
 
 g_palette = {{ 6, 5 }, { 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }}
+
+g_intro = {
+    "episode 43",
+    "<sacrifices must be made",
+    "",
+    "a long time ago,",
+    "in a garden far,",
+    "far away. . .",
+    "",
+    "the cats escaped!",
+    "",
+    "grandma must return",
+    "them home safe. but",
+    "<the journey is perilous",
+    "and cats don't listen.",
+    "",
+    ". . . will she succeed",
+    "eventually? it's only",
+    "up to you. good luck!",
+}
 
 g_levels = {
     { 0,  0, 16,  7, "hello world!" }, -- level 1
@@ -219,12 +248,13 @@ end
 --
 
 function _init()
+    poke(0x5f34, 1)
     cartdata("ld43_escargames")
     music(7, 8000)
-    state = "menu"
+    state = "intro"
+    scroll = 0
     particles = {}
     num = {1}
-    world = make_world(g_ong_level)
     menu = {
         doordw = 128,
         doorx = 0,
@@ -235,10 +265,15 @@ function _init()
         rect_y1 = 72,
         high_y = 78,
         selectlevel = 1,
-        wait = 0
     }
     jump_speed = 1
     fall_speed = 1
+    -- create sin/cos table
+    st, ct = {}, {}
+    for i=1,128 do
+        st[i] = sin(i / 128)
+        ct[i] = cos(i / 128)
+    end
 end
 
 function _update60()
@@ -248,6 +283,49 @@ end
 function _draw()
     config[state].draw()
 end 
+
+--
+-- intro
+--
+
+function config.intro.update()
+    scroll += 1 / 4
+    if cbtnp(g_btn_confirm) or scroll > #g_intro * 16 + 160 then
+        state = "menu"
+    end
+end
+
+function config.intro.draw()
+    cls(0)
+    camera(-64,-64)
+    for x=1,128,2 do
+        local m = (1+x%3) * scroll + 1450*sin(x/73)
+        pset(m%200 * ct[x], m%200 * st[x], x%3+5)
+        pset(m%200 * -st[x], m%200 * ct[x], x%3+5)
+    end
+    camera()
+    font_outline(1)
+    if scroll > 130 then
+        --print("🅾️ skip", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
+        --pico8_print("🅾️ skip", 101, 121 - 3.5 * abs(sin(t()/2)), 0)
+        pico8_print("🅾️ skip", 100, 120 - 3.5 * abs(sin(t()/2)), 9)
+    end
+    font_center(true)
+    for i=1,#g_intro do
+        local line = 128 + i * 16 - scroll
+        if line >= -20 and line < 128 then
+            local str = g_intro[i]
+            if sub(str,1,1) == "<" then
+                font_scale(0.9)
+                str = sub(str, 2, #str)
+            end
+            print(str, 64, line, 10)
+            font_scale()
+        end
+    end
+    font_center()
+    font_outline()
+end
 
 --
 -- menu
@@ -267,10 +345,15 @@ function config.menu.draw()
 end
 
 function open_door()
+<<<<<<< HEAD
     if menu.wait > 0 then
         menu.wait -= 1
     end
     if cbtnp(g_btn_confirm) and not menu.scores then
+=======
+    if cbtnp(g_btn_confirm) then
+        sfx(g_sfx_confirm)
+>>>>>>> a4871e8fff40b2cc654b198087059731e08da1b8
         if menu.rectpos == 1 then
             menu.opening = true
             music(-7, 5000)
@@ -280,11 +363,14 @@ function open_door()
         elseif menu.rectpos == 3 then
             menu.help = true
         end
+<<<<<<< HEAD
         sfx(g_sfx_menu)
     elseif cbtnp(g_btn_back) and menu.scores then
         menu.scores = false
         menu.high_y = 78
         sfx(g_sfx_menu)
+=======
+>>>>>>> a4871e8fff40b2cc654b198087059731e08da1b8
     end
 
     if menu.opening == true then
@@ -331,11 +417,11 @@ end
 
 function choose_menu()
     if btnp(3) and menu.rectpos < 3 then
+        sfx(g_sfx_navigate)
         menu.rectpos += 1
-        sfx(g_sfx_menu)
     elseif btnp(2) and menu.rectpos > 1 then
+        sfx(g_sfx_navigate)
         menu.rectpos -= 1
-        sfx(g_sfx_menu)
     end
 end
 
@@ -345,6 +431,7 @@ end
 
 function config.ready.update()
     if cbtnp(g_btn_confirm) then
+        sfx(g_sfx_confirm)
         state = "play"
     end
 end
@@ -366,6 +453,7 @@ end
 
 function config.finished.update()
     if cbtnp(g_btn_confirm) then
+        sfx(g_sfx_confirm)
         level += 1
         if level > #g_levels then
             -- beat the game...
@@ -468,8 +556,10 @@ function update_player()
         update_entity(world.player)
         selectcolorscreen = true
         if btnp(0) and selectcolor > 1 then
+            sfx(g_sfx_navigate)
             selectcolor -= 1
         elseif btnp(1) and selectcolor < #num then
+            sfx(g_sfx_navigate)
             selectcolor += 1
         end
         world.player.call = num[selectcolor]
@@ -497,6 +587,7 @@ function update_tomatoes()
         -- update move plan if necessary
         if world.player.call == t.color and not selectcolorscreen then -- go left or right or up or down
             if rnd(2) > 1.99 then
+                sfx(g_sfx_happy)
                 t.happy = 20
             end
             if t.happy then
@@ -516,6 +607,7 @@ function update_tomatoes()
         if world.exit and
            abs(t.x - world.exit.x) < 2 and
            abs(t.y - world.exit.y) < 2 then
+            sfx(g_sfx_saved)
             saved += 1
             world.numbercats[t.color] -= 1
             world.saved[t.color] += 1
@@ -533,6 +625,7 @@ function update_tomatoes()
         end
         -- did we die in spikes or some other trap?
         if trap(t.x, t.y) then
+            sfx(g_sfx_death)
             s = world.spikes_lut[flr(t.x/8) + flr(t.y/8)/256]
             s.fill = min(s.fill + g_fill_amount, 8)
             world.numbercats[t.color] -= 1
@@ -714,6 +807,107 @@ function ladder_middle(e)
 end
 
 --
+<<<<<<< HEAD
+=======
+-- help
+--
+
+function config.help.update()
+    if cbtnp(g_btn_back) then
+        sfx(g_sfx_confirm)
+        state = "menu"
+    end
+end
+
+function config.help.draw()
+    cls(0) fillp(0x1414) rectfill(0,0,128,128,1) fillp()
+    font_outline(1)
+    font_center(true)
+    print("help", 64, 10, 7)
+    font_center()
+    print("❎ back", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
+    font_outline()
+end
+
+--
+-- level selection screen
+--
+
+function config.levels.update()
+    if menu.high_y > 15 then
+        menu.high_y -= 2
+    end
+    if btnp(0) and menu.selectlevel > 1 then
+        menu.selectlevel -= 1
+        sfx(g_sfx_menu)
+    elseif btnp(1) and menu.selectlevel < #g_levels then
+        menu.selectlevel += 1
+        sfx(g_sfx_menu)
+    end
+    if cbtnp(g_btn_confirm) then
+        state = "menu"
+        menu.opening = true
+        g_ong_level = menu.selectlevel
+        sfx(g_sfx_menu)
+    end
+    if cbtnp(g_btn_back) then
+        state = "menu"
+    end
+end
+
+function config.levels.draw()
+    cls(0)
+    draw_background()
+    font_outline(1)
+    print("❎ back", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
+    font_outline()
+    draw_level_selector()
+end
+
+function draw_level_selector()
+    font_center(true)
+    font_outline(1)
+    print("levels", 64, menu.high_y - 10, 13)
+    font_center()
+    font_outline()
+    local select = {}
+    if menu.selectlevel < 7 then
+        for i = 1, min(6, #g_levels) do
+            select[i] = {15, 9}
+            select[menu.selectlevel] = {14, 8}
+            smoothrectfill(-7 + 30*((i-1)%3 + 1), 25 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 45 + 30*flr((i-1)/3), 5, select[i][1], select[i][2])
+            font_center(true)
+            print(tostr(i), 5 + 29*((i-1)%3 + 1), 28 + 30*flr((i-1)/3), 5)
+            font_center()
+        end
+    elseif menu.selectlevel < 13 then
+        for i = 7, min(12, #g_levels) do
+            select[i] = {15, 9}
+            select[menu.selectlevel] = {14, 8}
+            smoothrectfill(-7 + 30*((i-7)%3 + 1), 25 + 30*flr((i-7)/3), 13 + 30*((i-7)%3 + 1), 45 + 30*flr((i-7)/3), 5, select[i][1], select[i][2])
+            font_center(true)
+            print(tostr(i), 5 + 29*((i-7)%3 + 1), 28 + 30*flr((i-7)/3), 5)
+            font_center()
+        end
+    elseif menu.selectlevel < 19 then
+        for i = 13, min(19, #g_levels) do
+            select[i] = {15, 9}
+            select[menu.selectlevel] = {14, 8}
+            smoothrectfill(-7 + 30*((i-13)%3 + 1), 25 + 30*flr((i-13)/3), 13 + 30*((i-13)%3 + 1), 45 + 30*flr((i-13)/3), 5, select[i][1], select[i][2])
+            font_center(true)
+            print(tostr(i), 5 + 29*((i-13)%3 + 1), 28 + 30*flr((i-13)/3), 5)
+            font_center()
+        end
+    end
+    for i = 1, 3 do
+        font_outline(0.5, 0.5)
+        print("★ ", 59 - 23 + (i - 1)*20, 85, 6, 10)
+        font_outline()
+    end
+end
+
+--
+>>>>>>> a4871e8fff40b2cc654b198087059731e08da1b8
 -- pause
 --
 
@@ -999,6 +1193,7 @@ double_homicide = {
 function load_font(data, height)
     pico8_print = pico8_print or print
     local m = 0x5f25
+    local cache = {}
     local font = {}
     local acc = {}
     local outline = 0
@@ -1034,27 +1229,50 @@ function load_font(data, height)
         end
         col = col or peek(m)
         str = tostr(str)
+        local key = tostr(scale)..""..str
         local delta = min(1, 1/scale)
         local startx,starty = x,y
         local pixels = {}
-        x,xmax,y = 16,16,16
-        for i=1,#str+1 do
-            local ch=sub(str,i,i)
-            local data=font[ch]
-            if ch=="\n" or #ch==0 then
-                y += height * scale
-                x = 16
-            elseif data then
-                for dx=0,#data,delta do
-                    for dy=0,height,delta do
-                        if band(data[1 + flr(dx)],2^flr(dy))!=0 then
-                            pixels[flr(y + dy * scale) + flr(x + dx * scale) / 256] = true
+        local xmax = 16
+        if cache[key] then
+            pixels = cache[key][1]
+            xmax = cache[key][2]
+        else
+            x,y = 16,16
+            for i=1,#str+1 do
+                local ch=sub(str,i,i)
+                local data=font[ch]
+                if ch=="\n" or #ch==0 then
+                    y += height * scale
+                    x = 16
+                elseif data then
+                    for dx=0,#data,delta do
+                        for dy=0,height,delta do
+                            if band(data[1 + flr(dx)],2^flr(dy))!=0 then
+                                pixels[flr(x + dx * scale) + flr(y + dy * scale) / 256] = true
+                            end
                         end
                     end
+                    x += (#data + 1) * scale
+                    xmax = max(x - scale, xmax)
                 end
-                x += (#data + 1) * scale
-                xmax = max(x - scale, xmax)
             end
+            -- count elements in the cache
+            local count = 0
+            for _,_ in pairs(cache) do
+                count += 1
+            end
+            -- if cache is full, remove one argument at random
+            if count > 16 then
+                count = flr(rnd(count))
+                for _,v in pairs(cache) do
+                    count -= 1
+                    if count == 0 then
+                        del(cache, v)
+                    end
+                end
+            end
+            cache[key] = { pixels, xmax }
         end
         -- print outline
         local dx = startx - 16
@@ -1062,14 +1280,14 @@ function load_font(data, height)
         if center then dx += flr((16 - xmax + 0.5) / 2) end
         if outline > 0 or ox != 0 or oy != 0 then
             for p,m in pairs(pixels) do
-                local x,y = dx + ox + p%1*256, dy + oy + flr(p)
+                local x,y = dx + ox + flr(p), dy + oy + p%1*256
                 rectfill(x-outline,y-outline,x+outline,y+outline,ocol)
                 --circfill(x, y, outline, ocol)
             end
         end
         -- print actual text
         for p,_ in pairs(pixels) do
-            pset(dx + p%1*256, dy + flr(p), col)
+            pset(dx + flr(p), dy + p%1*256, col)
         end
         -- save state
         poke(m, col)
