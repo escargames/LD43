@@ -751,7 +751,7 @@ end
 
 function wall_or_ladder(x,y)
     local m = mget(x/8,y/8)
-    if fget(m,5) then
+    if fget(m,5) and world then
         local spike = world.spikes_lut[flr(x/8) + flr(y/8)/256]
         if spike and spike.fill >= 8 then
             return true
