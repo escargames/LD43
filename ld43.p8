@@ -41,7 +41,9 @@ g_spr_exit = 26
 g_spr_spikes = 36
 g_spr_count = 48
 
-g_fill_amount = 2
+g_fill_amount = 4
+g_win_frames = 40
+g_lose_frames = 80
 
 g_palette = {
     { 5, 13,  6 }, -- no color
@@ -434,11 +436,11 @@ end
 function config.finished.update()
     if cbtnp(g_btn_confirm) then
         sfx(g_sfx_confirm)
-        level += 1
-        if level > #g_levels then
+        if world.win and level == #g_levels then
             -- beat the game...
             state = "menu"
         else
+            if (world.win) level += 1
             new_game()
             state = "ready"
         end
@@ -449,9 +451,15 @@ function config.finished.draw()
     cls(0) fillp(0x1414) rectfill(0,0,128,128,1) fillp()
     font_outline(1)
     font_center(true)
-    print("congratulations!", 64, 20, 7)
-    font_center()
-    print("🅾️ continue", 54, 112 - 8.5 * abs(sin(t()/2)), 9)
+    if world.win then
+        print("well done!", 64, 20, 7)
+        font_center()
+        print("🅾️ continue", 54, 112 - 8.5 * abs(sin(t()/2)), 9)
+    else
+        print("you failed!", 64, 20, 8)
+        font_center()
+        print("🅾️ retry", 64, 112 - 8.5 * abs(sin(t()/2)), 9)
+    end
     font_outline()
 end
 
@@ -471,15 +479,10 @@ function config.play.update()
         if world.win < 0 then
             state = "finished"
         end
-    else
-        local win = true
-        for i, num in pairs(world.goal) do
-            if world.saved[i] < num then
-                win = false
-            end
-        end
-        if win then
-            world.win = 40
+    elseif world.lose then
+        world.lose -= 1
+        if world.lose < 0 then
+            state = "finished"
         end
     end
 end
@@ -497,6 +500,15 @@ function config.play.draw()
     camera()
     draw_ui()
     --draw_debug()
+end
+
+function has_won()
+    for i, num in pairs(world.goal) do
+        if world.saved[i] < num then
+            return false
+        end
+    end
+    return true
 end
 
 function move_x(e, dx)
@@ -530,6 +542,9 @@ function update_particles()
 end
 
 function update_player()
+    if world.lose then
+        return -- do nothing, we died!
+    end
     if not btn(g_btn_call) then
         selectcolor = 1
         update_entity(world.player, btn(0), btn(1), jump(), btn(3))
@@ -546,11 +561,11 @@ function update_player()
         end
         world.player.call = num[selectcolor]
     end
-     -- did we die in spikes or some other trap?
+    -- did we die in spikes or some other trap?
     if trap(world.player.x, world.player.y) then
         sfx(g_sfx_death)
-        state = "finished"
-    death_particles(world.player.x, world.player.y)
+        world.lose = g_lose_frames
+        death_particles(world.player.x, world.player.y)
     end
 end
 
@@ -601,6 +616,9 @@ function update_cats()
             world.saved[t.color] += 1
             world.saved[1] += 1
             del(world.cats, t)
+            if has_won() then
+                world.win = g_win_frames
+            end
             -- save particles!
             for i=1,crnd(20,30) do
                 add(particles, { x = t.x, y = t.y,
@@ -1031,6 +1049,9 @@ function draw_ui()
 end
 
 function draw_player()
+    if world.lose then
+        return -- do nothing, we died!
+    end
     local player = world.player
     spr(68 + 2 * flr(player.walk / 8 % 4), player.x - 8, player.y - 4, 2, 1, player.dir)
     spr(80 + 2 * flr(player.anim / 16 % 2), player.x - 8, player.y - 11, 2, 2, player.dir)
