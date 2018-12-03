@@ -257,7 +257,6 @@ function _init()
         rectpos = 1,
         high_y = 78,
         selectlevel = 1,
-        wait = 0
     }
     jump_speed = 1
     fall_speed = 1
@@ -301,7 +300,7 @@ g_intro = {
 
 function config.intro.update()
     scroll += 1 / 4
-    if scroll > #g_intro * 16 + 160 then
+    if cbtnp(g_btn_confirm) or scroll > #g_intro * 16 + 160 then
         state = "menu"
     end
 end
@@ -316,6 +315,11 @@ function config.intro.draw()
     end
     camera()
     font_outline(1)
+    --if scroll > 50 then
+    --    print("🅾️ skip", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
+    --end
+    --pico8_print("🅾️ skip", 101, 121 - 3.5 * abs(sin(t()/2)), 0)
+    pico8_print("🅾️ skip", 100, 120 - 3.5 * abs(sin(t()/2)), 9)
     font_center(true)
     for i=1,#g_intro do
         local line = 128 + i * 16 - scroll
@@ -328,9 +332,6 @@ function config.intro.draw()
         end
     end
     font_center()
-    --if scroll > 50 then
-    --    print("🅾️ skip", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
-    --end
     font_outline()
 end
 
@@ -351,9 +352,6 @@ function config.menu.draw()
 end
 
 function open_door()
-    if menu.wait > 0 then
-        menu.wait -= 1
-    end
     if cbtnp(g_btn_confirm) then
         if menu.rectpos == 1 then
             menu.opening = true
@@ -810,7 +808,7 @@ end
 --
 
 function config.levels.update()
-    if menu.high_y > 30 then
+    if menu.high_y > 15 then
         menu.high_y -= 2
     end
     if btnp(0) and menu.selectlevel > 1 then
@@ -820,17 +818,23 @@ function config.levels.update()
         menu.selectlevel += 1
         sfx(g_sfx_menu)
     end
-    if cbtnp(g_btn_confirm) and menu.wait < 1 then
+    if cbtnp(g_btn_confirm) then
         state = "menu"
         menu.opening = true
         g_ong_level = menu.selectlevel
         sfx(g_sfx_menu)
+    end
+    if cbtnp(g_btn_back) then
+        state = "menu"
     end
 end
 
 function config.levels.draw()
     cls(0)
     draw_background()
+    font_outline(1)
+    print("❎ back", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
+    font_outline()
     draw_level_selector()
 end
 
@@ -843,35 +847,35 @@ function draw_level_selector()
     local select = {}
     if menu.selectlevel < 7 then
         for i = 1, min(6, #g_levels) do
-        select[i] = {15, 9}
-        select[menu.selectlevel] = {14, 8}
-        smoothrectfill(-7 + 30*((i-1)%3 + 1), 40 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 60 + 30*flr((i-1)/3), 5, select[i][1], select[i][2])
-        font_center(true)
-        print(tostr(i), 5 + 29*((i-1)%3 + 1), 43 + 30*flr((i-1)/3), 5)
-        font_center()
+            select[i] = {15, 9}
+            select[menu.selectlevel] = {14, 8}
+            smoothrectfill(-7 + 30*((i-1)%3 + 1), 25 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 45 + 30*flr((i-1)/3), 5, select[i][1], select[i][2])
+            font_center(true)
+            print(tostr(i), 5 + 29*((i-1)%3 + 1), 28 + 30*flr((i-1)/3), 5)
+            font_center()
         end
     elseif menu.selectlevel < 13 then
         for i = 7, min(12, #g_levels) do
             select[i] = {15, 9}
             select[menu.selectlevel] = {14, 8}
-            smoothrectfill(-7 + 30*((i-7)%3 + 1), 40 + 30*flr((i-7)/3), 13 + 30*((i-7)%3 + 1), 60 + 30*flr((i-7)/3), 5, select[i][1], select[i][2])
+            smoothrectfill(-7 + 30*((i-7)%3 + 1), 25 + 30*flr((i-7)/3), 13 + 30*((i-7)%3 + 1), 45 + 30*flr((i-7)/3), 5, select[i][1], select[i][2])
             font_center(true)
-            print(tostr(i), 5 + 29*((i-7)%3 + 1), 43 + 30*flr((i-7)/3), 5)
+            print(tostr(i), 5 + 29*((i-7)%3 + 1), 28 + 30*flr((i-7)/3), 5)
             font_center()
         end
     elseif menu.selectlevel < 19 then
         for i = 13, min(19, #g_levels) do
             select[i] = {15, 9}
             select[menu.selectlevel] = {14, 8}
-            smoothrectfill(-7 + 30*((i-13)%3 + 1), 40 + 30*flr((i-13)/3), 13 + 30*((i-13)%3 + 1), 60 + 30*flr((i-13)/3), 5, select[i][1], select[i][2])
+            smoothrectfill(-7 + 30*((i-13)%3 + 1), 25 + 30*flr((i-13)/3), 13 + 30*((i-13)%3 + 1), 45 + 30*flr((i-13)/3), 5, select[i][1], select[i][2])
             font_center(true)
-            print(tostr(i), 5 + 29*((i-13)%3 + 1), 43 + 30*flr((i-13)/3), 5)
+            print(tostr(i), 5 + 29*((i-13)%3 + 1), 28 + 30*flr((i-13)/3), 5)
             font_center()
         end
     end
     for i = 1, 3 do
         font_outline(0.5, 0.5)
-        print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10)
+        print("★ ", 59 - 23 + (i - 1)*20, 85, 6, 10)
         font_outline()
     end
 end
@@ -1127,6 +1131,7 @@ double_homicide = {
 function load_font(data, height)
     pico8_print = pico8_print or print
     local m = 0x5f25
+    local cache = {}
     local font = {}
     local acc = {}
     local outline = 0
@@ -1162,27 +1167,50 @@ function load_font(data, height)
         end
         col = col or peek(m)
         str = tostr(str)
+        local key = tostr(scale)..""..str
         local delta = min(1, 1/scale)
         local startx,starty = x,y
         local pixels = {}
-        x,xmax,y = 16,16,16
-        for i=1,#str+1 do
-            local ch=sub(str,i,i)
-            local data=font[ch]
-            if ch=="\n" or #ch==0 then
-                y += height * scale
-                x = 16
-            elseif data then
-                for dx=0,#data,delta do
-                    for dy=0,height,delta do
-                        if band(data[1 + flr(dx)],2^flr(dy))!=0 then
-                            pixels[flr(y + dy * scale) + flr(x + dx * scale) / 256] = true
+        local xmax = 16
+        if cache[key] then
+            pixels = cache[key][1]
+            xmax = cache[key][2]
+        else
+            x,y = 16,16
+            for i=1,#str+1 do
+                local ch=sub(str,i,i)
+                local data=font[ch]
+                if ch=="\n" or #ch==0 then
+                    y += height * scale
+                    x = 16
+                elseif data then
+                    for dx=0,#data,delta do
+                        for dy=0,height,delta do
+                            if band(data[1 + flr(dx)],2^flr(dy))!=0 then
+                                pixels[flr(x + dx * scale) + flr(y + dy * scale) / 256] = true
+                            end
                         end
                     end
+                    x += (#data + 1) * scale
+                    xmax = max(x - scale, xmax)
                 end
-                x += (#data + 1) * scale
-                xmax = max(x - scale, xmax)
             end
+            -- count elements in the cache
+            local count = 0
+            for _,_ in pairs(cache) do
+                count += 1
+            end
+            -- if cache is full, remove one argument at random
+            if count > 16 then
+                count = flr(rnd(count))
+                for _,v in pairs(cache) do
+                    count -= 1
+                    if count == 0 then
+                        del(cache, v)
+                    end
+                end
+            end
+            cache[key] = { pixels, xmax }
         end
         -- print outline
         local dx = startx - 16
@@ -1190,14 +1218,14 @@ function load_font(data, height)
         if center then dx += flr((16 - xmax + 0.5) / 2) end
         if outline > 0 or ox != 0 or oy != 0 then
             for p,m in pairs(pixels) do
-                local x,y = dx + ox + p%1*256, dy + oy + flr(p)
+                local x,y = dx + ox + flr(p), dy + oy + p%1*256
                 rectfill(x-outline,y-outline,x+outline,y+outline,ocol)
                 --circfill(x, y, outline, ocol)
             end
         end
         -- print actual text
         for p,_ in pairs(pixels) do
-            pset(dx + p%1*256, dy + flr(p), col)
+            pset(dx + flr(p), dy + p%1*256, col)
         end
         -- save state
         poke(m, col)
