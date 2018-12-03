@@ -22,11 +22,19 @@ g_btn_back = 5
 g_btn_jump = 4
 g_btn_call = 5
 
-g_sfx_menu = 16
+-- menu navigation sfx
+g_sfx_navigate = 15
+g_sfx_confirm = 16
+
+-- gameplay sfx
+g_sfx_death = 8
+g_sfx_happy = 7
+g_sfx_saved = 9
 g_sfx_jump = 10
 g_sfx_ladder = 13
 g_sfx_footstep = 11
 
+-- sprites
 g_spr_player = 18
 g_spr_follower = 20
 g_spr_exit = 26
@@ -353,6 +361,7 @@ end
 
 function open_door()
     if cbtnp(g_btn_confirm) then
+        sfx(g_sfx_confirm)
         if menu.rectpos == 1 then
             menu.opening = true
             music(-7, 5000)
@@ -361,7 +370,6 @@ function open_door()
         elseif menu.rectpos == 3 then
             state = "help"
         end
-        sfx(g_sfx_menu)
     end
 
     if menu.opening == true then
@@ -380,11 +388,11 @@ end
 
 function choose_menu()
     if btnp(3) and menu.rectpos < 3 then
+        sfx(g_sfx_navigate)
         menu.rectpos += 1
-        sfx(g_sfx_menu)
     elseif btnp(2) and menu.rectpos > 1 then
+        sfx(g_sfx_navigate)
         menu.rectpos -= 1
-        sfx(g_sfx_menu)
     end
 end
 
@@ -394,6 +402,7 @@ end
 
 function config.ready.update()
     if cbtnp(g_btn_confirm) then
+        sfx(g_sfx_confirm)
         state = "play"
     end
 end
@@ -415,6 +424,7 @@ end
 
 function config.finished.update()
     if cbtnp(g_btn_confirm) then
+        sfx(g_sfx_confirm)
         level += 1
         if level > #g_levels then
             -- beat the game...
@@ -519,8 +529,10 @@ function update_player()
         update_entity(world.player)
         selectcolorscreen = true
         if btnp(0) and selectcolor > 1 then
+            sfx(g_sfx_navigate)
             selectcolor -= 1
         elseif btnp(1) and selectcolor < #num then
+            sfx(g_sfx_navigate)
             selectcolor += 1
         end
         world.player.call = num[selectcolor]
@@ -548,6 +560,7 @@ function update_tomatoes()
         -- update move plan if necessary
         if world.player.call == t.color and not selectcolorscreen then -- go left or right or up or down
             if rnd(2) > 1.99 then
+                sfx(g_sfx_happy)
                 t.happy = 20
             end
             if t.happy then
@@ -567,6 +580,7 @@ function update_tomatoes()
         if world.exit and
            abs(t.x - world.exit.x) < 2 and
            abs(t.y - world.exit.y) < 2 then
+            sfx(g_sfx_saved)
             saved += 1
             world.numbercats[t.color] -= 1
             world.saved[t.color] += 1
@@ -584,6 +598,7 @@ function update_tomatoes()
         end
         -- did we die in spikes or some other trap?
         if trap(t.x, t.y) then
+            sfx(g_sfx_death)
             s = world.spikes_lut[flr(t.x/8) + flr(t.y/8)/256]
             s.fill = min(s.fill + g_fill_amount, 8)
             world.numbercats[t.color] -= 1
@@ -789,6 +804,7 @@ end
 
 function config.help.update()
     if cbtnp(g_btn_back) then
+        sfx(g_sfx_confirm)
         state = "menu"
     end
 end
