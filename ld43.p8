@@ -7,6 +7,7 @@ __lua__
 --
 
 config = {
+    intro = {},
     menu = {},
     help = {},
     levels = {},
@@ -244,10 +245,10 @@ end
 function _init()
     cartdata("ld43_escargames")
     music(7, 8000)
-    state = "menu"
+    state = "intro"
+    scroll = 0
     particles = {}
     num = {1}
-    world = make_world(g_ong_level)
     menu = {
         doordw = 128,
         doorx = 0,
@@ -260,6 +261,12 @@ function _init()
     }
     jump_speed = 1
     fall_speed = 1
+    -- create sin/cos table
+    st, ct = {}, {}
+    for i=1,128 do
+        st[i] = sin(i / 128)
+        ct[i] = cos(i / 128)
+    end
 end
 
 function _update60()
@@ -268,6 +275,63 @@ end
 
 function _draw()
     config[state].draw()
+end
+
+--
+-- intro
+--
+
+g_intro = {
+    "episode 43",
+    "sacrifices must be made",
+    "",
+    "a long time ago,",
+    "in a garden far,",
+    "far away...",
+    "",
+    "the cats escaped!",
+    "",
+    "grandma must return",
+    "them home safe. but",
+    "the journey is perilous",
+    "and cats never listen.",
+    "",
+    "good luck!",
+}
+
+function config.intro.update()
+    scroll += 1 / 4
+    if scroll > #g_intro * 16 + 160 then
+        state = "menu"
+    end
+end
+
+function config.intro.draw()
+    cls(0)
+    camera(-64,-64)
+    for x=1,128,2 do
+        local m = (1+x%3) * scroll + 1450*sin(x/73)
+        pset(m%200 * ct[x], m%200 * st[x], x%3+5)
+        pset(m%200 * -st[x], m%200 * ct[x], x%3+5)
+    end
+    camera()
+    font_outline(1)
+    font_center(true)
+    for i=1,#g_intro do
+        local line = 128 + i * 16 - scroll
+        if line >= -20 and line < 128 then
+            if #g_intro[i] > 20 then
+                font_scale(0.9)
+            end
+            print(g_intro[i], 64, line, 10)
+            font_scale()
+        end
+    end
+    font_center()
+    --if scroll > 50 then
+    --    print("🅾️ skip", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
+    --end
+    font_outline()
 end
 
 --
