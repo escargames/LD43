@@ -345,15 +345,8 @@ function config.menu.draw()
 end
 
 function open_door()
-<<<<<<< HEAD
-    if menu.wait > 0 then
-        menu.wait -= 1
-    end
-    if cbtnp(g_btn_confirm) and not menu.scores then
-=======
     if cbtnp(g_btn_confirm) then
         sfx(g_sfx_confirm)
->>>>>>> a4871e8fff40b2cc654b198087059731e08da1b8
         if menu.rectpos == 1 then
             menu.opening = true
             music(-7, 5000)
@@ -363,14 +356,6 @@ function open_door()
         elseif menu.rectpos == 3 then
             menu.help = true
         end
-<<<<<<< HEAD
-        sfx(g_sfx_menu)
-    elseif cbtnp(g_btn_back) and menu.scores then
-        menu.scores = false
-        menu.high_y = 78
-        sfx(g_sfx_menu)
-=======
->>>>>>> a4871e8fff40b2cc654b198087059731e08da1b8
     end
 
     if menu.opening == true then
@@ -807,8 +792,6 @@ function ladder_middle(e)
 end
 
 --
-<<<<<<< HEAD
-=======
 -- help
 --
 
@@ -907,7 +890,6 @@ function draw_level_selector()
 end
 
 --
->>>>>>> a4871e8fff40b2cc654b198087059731e08da1b8
 -- pause
 --
 
