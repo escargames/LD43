@@ -45,6 +45,26 @@ g_fill_amount = 2
 
 g_palette = {{ 6, 5 }, { 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }}
 
+g_intro = {
+    "episode 43",
+    "<sacrifices must be made",
+    "",
+    "a long time ago,",
+    "in a garden far,",
+    "far away. . .",
+    "",
+    "the cats escaped!",
+    "",
+    "grandma must return",
+    "them home safe. but",
+    "<the journey is perilous",
+    "and cats don't listen.",
+    "",
+    ". . . will she succeed",
+    "eventually? it's only",
+    "up to you. good luck!",
+}
+
 g_levels = {
     { 0,  0, 16,  7, "hello world!" }, -- level 1
     { 0,  7, 16,  9, "first sacrifice" }, -- level 2
@@ -251,6 +271,7 @@ end
 --
 
 function _init()
+    poke(0x5f34, 1)
     cartdata("ld43_escargames")
     music(7, 8000)
     state = "intro"
@@ -288,24 +309,6 @@ end
 -- intro
 --
 
-g_intro = {
-    "episode 43",
-    "sacrifices must be made",
-    "",
-    "a long time ago,",
-    "in a garden far,",
-    "far away...",
-    "",
-    "the cats escaped!",
-    "",
-    "grandma must return",
-    "them home safe. but",
-    "the journey is perilous",
-    "and cats never listen.",
-    "",
-    "good luck!",
-}
-
 function config.intro.update()
     scroll += 1 / 4
     if cbtnp(g_btn_confirm) or scroll > #g_intro * 16 + 160 then
@@ -323,19 +326,21 @@ function config.intro.draw()
     end
     camera()
     font_outline(1)
-    --if scroll > 50 then
-    --    print("🅾️ skip", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
-    --end
-    --pico8_print("🅾️ skip", 101, 121 - 3.5 * abs(sin(t()/2)), 0)
-    pico8_print("🅾️ skip", 100, 120 - 3.5 * abs(sin(t()/2)), 9)
+    if scroll > 130 then
+        --print("🅾️ skip", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
+        --pico8_print("🅾️ skip", 101, 121 - 3.5 * abs(sin(t()/2)), 0)
+        pico8_print("🅾️ skip", 100, 120 - 3.5 * abs(sin(t()/2)), 9)
+    end
     font_center(true)
     for i=1,#g_intro do
         local line = 128 + i * 16 - scroll
         if line >= -20 and line < 128 then
-            if #g_intro[i] > 20 then
+            local str = g_intro[i]
+            if sub(str,1,1) == "<" then
                 font_scale(0.9)
+                str = sub(str, 2, #str)
             end
-            print(g_intro[i], 64, line, 10)
+            print(str, 64, line, 10)
             font_scale()
         end
     end
