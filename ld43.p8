@@ -9,6 +9,7 @@ __lua__
 config = {
     menu = {},
     help = {},
+    levels = {},
     ready = {},
     play = {},
     finished = {},
@@ -246,7 +247,7 @@ end
 
 function _draw()
     config[state].draw()
-end 
+end
 
 --
 -- menu
@@ -259,7 +260,7 @@ end
 
 function config.menu.draw()
     cls(0)
-    draw_world()
+    draw_background()
     draw_menu()
     --draw_debug()
 end
@@ -268,41 +269,21 @@ function open_door()
     if menu.wait > 0 then
         menu.wait -= 1
     end
-    if cbtnp(g_btn_confirm) and not menu.scores then
+    if cbtnp(g_btn_confirm) then
         if menu.rectpos == 1 then
             menu.opening = true
             music(-7, 5000)
         elseif menu.rectpos == 2 then
-            menu.scores = true
-            menu.wait = 10
+            state = "levels"
         elseif menu.rectpos == 3 then
             state = "help"
         end
-        sfx(g_sfx_menu)
-    elseif cbtnp(g_btn_back) and menu.scores then
-        menu.scores = false
-        menu.high_y = 78
         sfx(g_sfx_menu)
     end
 
     if menu.opening == true then
         menu.doordw -= mid(2, menu.doordw / 5, 3) * menu.doorspd
         menu.doorx += mid(2, menu.doordw / 5, 3) * menu.doorspd
-    end
-
-    if menu.scores == true then
-        if menu.high_y > 30 then
-            menu.high_y -= 2
-        end
-        if btnp(0) and menu.selectlevel > 1 then
-            menu.selectlevel -= 1
-        elseif btnp(1) and menu.selectlevel < #g_levels then
-            menu.selectlevel += 1
-        end   
-        if cbtnp(g_btn_confirm) and menu.wait < 1 then
-            menu.opening = true
-            g_ong_level = menu.selectlevel
-        end      
     end
 
     if menu.doordw < 2 then
@@ -487,8 +468,8 @@ function update_tomatoes()
             if t.happy then
                 t.happy -= 1
             end
-            if t.x < world.player.x - 1 then 
-                t.plan[1] = true 
+            if t.x < world.player.x - 1 then
+                t.plan[1] = true
             elseif t.x > world.player.x + 1 then
                 t.plan[0] = true
             elseif t.y < world.player.y - 4 then
@@ -719,6 +700,77 @@ function config.help.draw()
 end
 
 --
+-- level selection screen
+--
+
+function config.levels.update()
+    if menu.high_y > 30 then
+        menu.high_y -= 2
+    end
+    if btnp(0) and menu.selectlevel > 1 then
+        menu.selectlevel -= 1
+        sfx(g_sfx_menu)
+    elseif btnp(1) and menu.selectlevel < #g_levels then
+        menu.selectlevel += 1
+        sfx(g_sfx_menu)
+    end
+    if cbtnp(g_btn_confirm) and menu.wait < 1 then
+        state = "menu"
+        menu.opening = true
+        g_ong_level = menu.selectlevel
+        sfx(g_sfx_menu)
+    end
+end
+
+function config.levels.draw()
+    cls(0)
+    draw_background()
+    draw_level_selector()
+end
+
+function draw_level_selector()
+    font_center(true)
+    font_outline(1)
+    print("levels", 64, menu.high_y - 10, 13)
+    font_center()
+    font_outline()
+    local select = {}
+    if menu.selectlevel < 7 then
+        for i = 1, min(6, #g_levels) do
+        select[i] = {15, 9}
+        select[menu.selectlevel] = {14, 8}
+        smoothrectfill(-7 + 30*((i-1)%3 + 1), 40 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 60 + 30*flr((i-1)/3), 5, select[i][1], select[i][2])
+        font_center(true)
+        print(tostr(i), 5 + 29*((i-1)%3 + 1), 43 + 30*flr((i-1)/3), 5)
+        font_center()
+        end
+    elseif menu.selectlevel < 13 then
+        for i = 7, min(12, #g_levels) do
+            select[i] = {15, 9}
+            select[menu.selectlevel] = {14, 8}
+            smoothrectfill(-7 + 30*((i-7)%3 + 1), 40 + 30*flr((i-7)/3), 13 + 30*((i-7)%3 + 1), 60 + 30*flr((i-7)/3), 5, select[i][1], select[i][2])
+            font_center(true)
+            print(tostr(i), 5 + 29*((i-7)%3 + 1), 43 + 30*flr((i-7)/3), 5)
+            font_center()
+        end
+    elseif menu.selectlevel < 19 then
+        for i = 13, min(19, #g_levels) do
+            select[i] = {15, 9}
+            select[menu.selectlevel] = {14, 8}
+            smoothrectfill(-7 + 30*((i-13)%3 + 1), 40 + 30*flr((i-13)/3), 13 + 30*((i-13)%3 + 1), 60 + 30*flr((i-13)/3), 5, select[i][1], select[i][2])
+            font_center(true)
+            print(tostr(i), 5 + 29*((i-13)%3 + 1), 43 + 30*flr((i-13)/3), 5)
+            font_center()
+        end
+    end
+    for i = 1, 3 do
+        font_outline(0.5, 0.5)
+        print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10)
+        font_outline()
+    end
+end
+
+--
 -- pause
 --
 
@@ -746,81 +798,40 @@ function keep_score(sc)
             dset(i+1,dget(i))
             dset(i, sc)
         end
-    end  
+    end
 end
 
 --
 -- drawing
 --
 
-function draw_menu()
-
+function draw_background()
     palt(0, false)
     sspr(80, 8, 16, 16, menu.doorx, 0, menu.doordw, 128)
     palt(0,true)
+end
 
+function draw_menu()
     if state == "menu" then
         if menu.doordw > 126 then
-            if not menu.scores then
-                palt(0, false)
-                palt(14, true)
-                palt()
-                local rect_y0 = 35 + 20 * menu.rectpos
-                local rect_y1 = 52 + 20 * menu.rectpos
-                smoothrectfill(38, rect_y0, 90, rect_y1, 7, 6, 0)
-                font_center(true)
-                font_outline(1.5, 0.5, 0.5)
-                font_scale(1.5)
-                print("ld43        ", 64, 24, 11)
-                print("        game", 64, 24, 15)
-                font_scale()
-                font_outline(1, 0.5, 0.5)
-                print("play", 64, 57, 9)
-                print("levels", 64, 77, 9)
-                print("help", 64, 97, 9)
-                font_outline()
-                font_center(false)
-            else
-                font_center(true)
-                font_outline(1)
-                print("levels", 64, menu.high_y - 10, 13)
-                font_center()
-                font_outline()
-                local select = {}
-                if menu.selectlevel < 7 then
-                    for i = 1, min(6, #g_levels) do
-                    select[i] = {15, 9}
-                    select[menu.selectlevel] = {14, 8}
-                    smoothrectfill(-7 + 30*((i-1)%3 + 1), 40 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 60 + 30*flr((i-1)/3), 5, select[i][1], select[i][2])
-                    font_center(true)
-                    print(tostr(i), 5 + 29*((i-1)%3 + 1), 43 + 30*flr((i-1)/3), 5)
-                    font_center()
-                    end
-                elseif menu.selectlevel < 13 then
-                    for i = 7, min(12, #g_levels) do
-                        select[i] = {15, 9}
-                        select[menu.selectlevel] = {14, 8}
-                        smoothrectfill(-7 + 30*((i-7)%3 + 1), 40 + 30*flr((i-7)/3), 13 + 30*((i-7)%3 + 1), 60 + 30*flr((i-7)/3), 5, select[i][1], select[i][2])
-                        font_center(true)
-                        print(tostr(i), 5 + 29*((i-7)%3 + 1), 43 + 30*flr((i-7)/3), 5)
-                        font_center()
-                    end
-                elseif menu.selectlevel < 19 then
-                    for i = 13, min(19, #g_levels) do
-                        select[i] = {15, 9}
-                        select[menu.selectlevel] = {14, 8}
-                        smoothrectfill(-7 + 30*((i-13)%3 + 1), 40 + 30*flr((i-13)/3), 13 + 30*((i-13)%3 + 1), 60 + 30*flr((i-13)/3), 5, select[i][1], select[i][2])
-                        font_center(true)
-                        print(tostr(i), 5 + 29*((i-13)%3 + 1), 43 + 30*flr((i-13)/3), 5)
-                        font_center()
-                    end
-                end 
-                for i = 1, 3 do
-                    font_outline(0.5, 0.5)
-                    print("★ ", 59 - 23 + (i - 1)*20, 100, 6, 10) 
-                    font_outline()
-                end
-            end
+            palt(0, false)
+            palt(14, true)
+            palt()
+            local rect_y0 = 35 + 20 * menu.rectpos
+            local rect_y1 = 52 + 20 * menu.rectpos
+            smoothrectfill(38, rect_y0, 90, rect_y1, 7, 6, 0)
+            font_center(true)
+            font_outline(1.5, 0.5, 0.5)
+            font_scale(1.5)
+            print("ld43        ", 64, 24, 11)
+            print("        game", 64, 24, 15)
+            font_scale()
+            font_outline(1, 0.5, 0.5)
+            print("play", 64, 57, 9)
+            print("levels", 64, 77, 9)
+            print("help", 64, 97, 9)
+            font_outline()
+            font_center(false)
         end
     elseif state == "pause" then
         font_scale(1.5)
@@ -1126,9 +1137,9 @@ __map__
 0e07070707070707070707070707070d0a0000000000000000000000000007070707070707070d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0a3000000000000000000000000000090a000000000000000000000000000000000000000000090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0a0000000000000000000000000000090a000000000000000000000000000000000000000035090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-0a0000000000000000000000143100090a000008082108080000000700000012130000000016090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-0a30300000000000001213001a1b00090a3100010111010100000000000000222300000007070d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-0a16160000000000002223002a2b00090a15000000110000000000000000110e070700000000090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0a0000000000000014310000000000090a000008082108080000000700000012130000000016090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0a303000000000001a1b0000121300090a3100010111010100000000000000222300000007070d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0a161600000000002a2b0000222300090a15000000110000000000000000110e070700000000090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 070707070707070707070707070707070e0700000711070d24240e070000110a000000000000090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0e07070707070707070707070707070d0a00000000110004070703000000110a000000000000090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0a3100000000000000000012130000090a000707001100000000000000040703000000000000090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
