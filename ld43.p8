@@ -23,16 +23,16 @@ g_btn_jump = 4
 g_btn_call = 5
 
 -- menu navigation sfx
-g_sfx_navigate = 15
-g_sfx_confirm = 16
+g_sfx_navigate = 40
+g_sfx_confirm = 41
 
 -- gameplay sfx
-g_sfx_death = 8
-g_sfx_happy = 7
-g_sfx_saved = 9
-g_sfx_jump = 10
-g_sfx_ladder = 13
-g_sfx_footstep = 11
+g_sfx_death = 38
+g_sfx_happy = 37
+g_sfx_saved = 39
+g_sfx_jump = 40
+g_sfx_ladder = 43
+g_sfx_footstep = 41
 
 -- sprites
 g_spr_player = 18
