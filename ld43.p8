@@ -1129,7 +1129,7 @@ function draw_player()
     spr(80 + 2 * flr(player.anim / 16 % 2), player.x - 8, player.y - 11, 2, 2, player.dir)
     if selectcolorscreen then
         for i = 1, #num do
-            local p = mid(world.x * 8 + #num*5, player.x, (world.x + world.w) * 8 - #num*5) - (#num-1)*7 + (i-1)*14
+            local p = mid(world.x * 8 + #num*9, player.x, (world.x + world.w) * 8 - #num*9) - (#num-1)*7 + (i-1)*14
             local palette = g_palette[num[i]]
             rectfill((p - 4), player.y - 20, (p + 4), player.y - 12, palette[2])
             if i == 1 then
