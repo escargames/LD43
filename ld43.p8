@@ -8,6 +8,7 @@ __lua__
 
 config = {
     menu = {},
+    help = {},
     ready = {},
     play = {},
     finished = {},
@@ -231,8 +232,6 @@ function _init()
         doorspd = 1,
         opening = false,
         rectpos = 1,
-        rect_y0 = 55,
-        rect_y1 = 72,
         high_y = 78,
         selectlevel = 1,
         wait = 0
@@ -256,7 +255,6 @@ end
 function config.menu.update()
     open_door()
     choose_menu()
-    rect_menu()
 end
 
 function config.menu.draw()
@@ -278,7 +276,7 @@ function open_door()
             menu.scores = true
             menu.wait = 10
         elseif menu.rectpos == 3 then
-            menu.help = true
+            state = "help"
         end
         sfx(g_sfx_menu)
     elseif cbtnp(g_btn_back) and menu.scores then
@@ -316,19 +314,6 @@ function open_door()
     end
 end
 
-function rect_menu()
-    if menu.rectpos == 1 then
-        menu.rect_y0 = 55
-        menu.rect_y1 = 72
-    elseif menu.rectpos == 2 then
-        menu.rect_y0 = 78
-        menu.rect_y1 = 95
-    elseif menu.rectpos == 3 then
-        menu.rect_y0 = 101
-        menu.rect_y1 = 118
-    end
-end
-
 function choose_menu()
     if btnp(3) and menu.rectpos < 3 then
         menu.rectpos += 1
@@ -350,14 +335,14 @@ function config.ready.update()
 end
 
 function config.ready.draw()
-    cls(0) fillp(0x1414.5) rectfill(0,0,128,128,1) fillp()
+    cls(0) fillp(0x1414) rectfill(0,0,128,128,1) fillp()
     font_outline(1)
     font_center(true)
     print("level "..level..":", 64, 20, 7)
     print(g_levels[level][5], 64, 40, 14)
-    print("please press 🅾️", 64, 100 - 8.5 * abs(sin(t()/2)), 9)
-    font_outline()
     font_center()
+    print("🅾️ play", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
+    font_outline()
 end
 
 --
@@ -378,13 +363,13 @@ function config.finished.update()
 end
 
 function config.finished.draw()
-    cls(0) fillp(0x1414.5) rectfill(0,0,128,128,1) fillp()
+    cls(0) fillp(0x1414) rectfill(0,0,128,128,1) fillp()
     font_outline(1)
     font_center(true)
     print("congratulations!", 64, 20, 7)
-    print("please press 🅾️", 64, 100 - 8.5 * abs(sin(t()/2)), 9)
-    font_outline()
     font_center()
+    print("🅾️ continue", 54, 112 - 8.5 * abs(sin(t()/2)), 9)
+    font_outline()
 end
 
 --
@@ -714,6 +699,26 @@ function ladder_middle(e)
 end
 
 --
+-- help
+--
+
+function config.help.update()
+    if cbtnp(g_btn_back) then
+        state = "menu"
+    end
+end
+
+function config.help.draw()
+    cls(0) fillp(0x1414) rectfill(0,0,128,128,1) fillp()
+    font_outline(1)
+    font_center(true)
+    print("help", 64, 10, 7)
+    font_center()
+    print("❎ back", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
+    font_outline()
+end
+
+--
 -- pause
 --
 
@@ -760,7 +765,9 @@ function draw_menu()
                 palt(0, false)
                 palt(14, true)
                 palt()
-                smoothrectfill(38, menu.rect_y0, 90, menu.rect_y1, 7, 6, 0)
+                local rect_y0 = 35 + 20 * menu.rectpos
+                local rect_y1 = 52 + 20 * menu.rectpos
+                smoothrectfill(38, rect_y0, 90, rect_y1, 7, 6, 0)
                 font_center(true)
                 font_outline(1.5, 0.5, 0.5)
                 font_scale(1.5)
@@ -769,8 +776,8 @@ function draw_menu()
                 font_scale()
                 font_outline(1, 0.5, 0.5)
                 print("play", 64, 57, 9)
-                print("levels", 64, 80, 9)
-                print("help", 64, 103, 9)
+                print("levels", 64, 77, 9)
+                print("help", 64, 97, 9)
                 font_outline()
                 font_center(false)
             else
