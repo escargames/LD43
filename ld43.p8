@@ -1010,11 +1010,11 @@ function draw_ui()
             cell += 1
         end
     end
-    if selectcolor > 1 then
-        local palette = g_palette[num[selectcolor]]
-        smoothrectfill(6, 3, 22, 17, 5, palette[2], 6)
-        print(world.numbercats[num[selectcolor]], 14, 4, palette[1])
-    end
+    --if selectcolor > 1 then
+        --local palette = g_palette[num[selectcolor]]
+        --smoothrectfill(6, 3, 22, 17, 5, palette[2], 6)
+        --print(world.numbercats[num[selectcolor]], 14, 4, palette[1])
+    --end
     font_outline()
 end
 
@@ -1025,15 +1025,17 @@ function draw_player()
     sspr(player.spr % 16 * 8, flr(player.spr / 16) * 8, w, w, player.x - w / 2, player.y + 4 - w + dy, w, w - dy, player.dir)
     if selectcolorscreen then
         for i = 1, #num do
-            local p = mid(world.x * 8 + #num*5, player.x, (world.x + world.w) * 8 - #num*5) - (#num-1)*5 + (i-1)*10
+            local p = mid(world.x * 8 + #num*5, player.x, (world.x + world.w) * 8 - #num*5) - (#num-1)*7 + (i-1)*14
             local palette = g_palette[num[i]]
-            rectfill((p - 2), player.y - 16, (p + 2), player.y - 12, palette[2])
+            rectfill((p - 4), player.y - 20, (p + 4), player.y - 12, palette[2])
             if i == 1 then
-                line((p - 2), player.y - 16, (p + 2), player.y - 12, 7)
-                line((p + 2), player.y - 16, (p - 2), player.y - 12, 7)
+                line((p - 4), player.y - 20, (p + 4), player.y - 12, 7)
+                line((p + 4), player.y - 20, (p - 4), player.y - 12, 7)
+            else
+                pico8_print(world.numbercats[num[i]], p - 1, player.y - 18, palette[1])
             end
             if i == selectcolor then
-                rect((p - 3), player.y - 17, (p + 3), player.y - 11, 6)
+                rect((p - 5), player.y - 21, (p + 5), player.y - 11, 6)
             end
         end
     end
