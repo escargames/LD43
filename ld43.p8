@@ -89,7 +89,7 @@ g_levels = {
 }
 
 g_ong_level = 0
-g_levels_unlocked = {}
+g_levels_unlocked = {1}
 
 --
 -- levels
@@ -1014,7 +1014,7 @@ end
 
 function update_levels_unlocked()
     for i = 1, #g_levels - 2 do
-        if dget(i) then
+        if dget(i) == 2 then
             g_levels_unlocked[i] = true
             g_levels_unlocked[i + 1] = true
             g_levels_unlocked[i + 2] = true
@@ -1168,17 +1168,7 @@ function draw_cats()
 end
 
 function draw_debug()
-    pico8_print("selectlevel "..tostr(menu.selectlevel), 5, 5, 7)
-    cursor(0,12)
-    pico8_print("player "..world.player.x.." "..world.player.y)
-    foreach(world.portals, function(p)
-        pico8_print("portal "..p.x.." "..p.y)
-    end)
-    --local j = 12
-    --foreach(world.cats, function(t)
-        --j += 6
-        --print("cat "..t.x.." "..t.y, 5, j)
-    --end)
+    pico8_print("levels unlocked "..tostr(#g_levels_unlocked), 5, 5, 7)
 end
 
 --
