@@ -43,7 +43,13 @@ g_spr_count = 48
 
 g_fill_amount = 2
 
-g_palette = {{ 6, 5 }, { 2, 8 }, { 1, 12 }, { 4, 9 }, { 3, 11 }}
+g_palette = {
+    { 5, 13,  6 }, -- no color
+    { 2,  8, 14 }, -- red
+    { 1, 12,  6 }, -- blue
+    { 4,  9, 10 }, -- yellow
+    { 3, 11,  6 }, -- green
+}
 
 g_intro = {
     "episode 43",
@@ -90,7 +96,7 @@ function make_world(level)
         world.name = g_levels[level][5]
     end
     world.spikes = {}
-    world.tomatoes = {}
+    world.cats = {}
     world.spikes_lut = {} -- fixme: not very nice
     world.goal = {}
     world.saved = { 0, 0, 0, 0, 0 }
@@ -114,7 +120,7 @@ function make_world(level)
                     local dir = x > world.x + world.w/2
                     for i=1,spawn_count do
                         local dx = i * (i % 2 * 2 - 1)
-                        add(world.tomatoes, new_tomato(8 * x + 4 + dx, 8 * y - rnd(4), color, dir))
+                        add(world.cats, new_cat(8 * x + 4 + dx, 8 * y - rnd(4), color, dir))
                     end
                     world.numbercats[color] += spawn_count
                 -- otherwise, if count is on the right, it's a save goal
@@ -169,7 +175,6 @@ function new_entity(x, y, dir)
         x = x, y = y,
         dir = dir,
         anim = flr(rnd(10)),
-        hit = 0,
         climbspd = 0.5,
         grounded = false,
         ladder = false,
@@ -190,7 +195,7 @@ function new_player(x, y, dir)
     return e
 end
 
-function new_tomato(x, y, color, dir)
+function new_cat(x, y, color, dir)
     local e = new_entity(x, y, dir)
     e.spd = crnd(0.4, 0.6)
     e.ssize = 1
@@ -459,7 +464,7 @@ function config.play.update()
     update_particles()
     update_player()
     update_numbercats()
-    update_tomatoes()
+    update_cats()
     update_spikes()
     -- did we win?
     if world.win then
@@ -487,7 +492,7 @@ function config.play.draw()
            world.y * 8 + (world.h > 16 and mid(0, world.player.y - world.y * 8 - 64, world.h * 8 - 128) or 4 * world.h - 64))
     draw_world()
     draw_particles()
-    draw_tomatoes()
+    draw_cats()
     draw_player()
     draw_grass()
     camera()
@@ -555,8 +560,8 @@ function update_numbercats()
     end
 end
 
-function update_tomatoes()
-    foreach(world.tomatoes, function(t)
+function update_cats()
+    foreach(world.cats, function(t)
         local old_x, old_y = t.x, t.y
         update_entity(t, t.plan[0], t.plan[1], t.plan[2], t.plan[3])
         for i = 0, 3 do
@@ -590,7 +595,7 @@ function update_tomatoes()
             world.numbercats[t.color] -= 1
             world.saved[t.color] += 1
             world.saved[1] += 1
-            del(world.tomatoes, t)
+            del(world.cats, t)
             -- save particles!
             for i=1,crnd(20,30) do
                 add(particles, { x = t.x, y = t.y,
@@ -607,7 +612,7 @@ function update_tomatoes()
             s = world.spikes_lut[flr(t.x/8) + flr(t.y/8)/256]
             s.fill = min(s.fill + g_fill_amount, 8)
             world.numbercats[t.color] -= 1
-            del(world.tomatoes, t)
+            del(world.cats, t)
             -- death particles!
             for i=1,crnd(20,30) do
                 add(particles, { x = t.x, y = t.y,
@@ -624,7 +629,6 @@ end
 function update_entity(e, go_left, go_right, go_up, go_down)
     -- update some variables
     e.anim += 1
-    e.hit = max(0, e.hit - 1)
 
     local old_x, old_y = e.x, e.y
 
@@ -1016,18 +1020,12 @@ function draw_ui()
     end
 end
 
-function draw_entity(e)
-    if e.hit > 0 then for i = 1,15 do pal(i, 6 + rnd(2)) end end
-    --spr(e.spr, e.x - 8, e.y - 12, 2, 2, e.dir)
-    local dy = 2 * cos(e.anim / 32)
-    local w = 8 * e.ssize
-    sspr(e.spr % 16 * 8, flr(e.spr / 16) * 8, w, w, e.x - w / 2, e.y + 4 - w + dy, w, w - dy, e.dir)
-    pal()
-end
-
 function draw_player()
     local player = world.player
-    draw_entity(player)
+    local dy = 2 * cos(player.anim / 32)
+    local w = 8 * player.ssize
+    sspr(player.spr % 16 * 8, flr(player.spr / 16) * 8, w, w, player.x - w / 2, player.y + 4 - w + dy, w, w - dy, player.dir)
+    pal()
     if selectcolorscreen then
         for i = 1, #num do
             local p = mid(world.x * 8 + #num*5, player.x, (world.x + world.w) * 8 - #num*5) - (#num-1)*5 + (i-1)*10
@@ -1051,24 +1049,27 @@ function draw_particles()
     end)
 end
 
-function draw_tomatoes()
-    foreach(world.tomatoes, function(t)
-        draw_entity(t)
+function draw_cats()
+    foreach(world.cats, function(t)
+        for i=1,3 do pal(g_palette[3][i], g_palette[t.color][i]) end
+        spr(64 + flr(t.anim / 16 % 2), t.x - 4, t.y - 4, 1, 1, t.dir)
+        spr(66, t.x - 4 + (t.dir and -2 or 2), t.y - 4 - flr(t.anim / 24 % 2), 1, 1, t.dir)
+        pal()
         if t.happy and t.happy > 0 then
             palt(0,false)
             palt(15, true)
             spr(38, t.x - 4, t.y - 13)
             palt()
         end
-        end)
+    end)
 end
 
 function draw_debug()
     pico8_print("selectlevel "..tostr(menu.selectlevel), 5, 5, 7)
     --local j = 12
-    --foreach(world.tomatoes, function(t)
+    --foreach(world.cats, function(t)
         --j += 6
-        --print("tomato "..t.x.." "..t.y, 5, j)
+        --print("cat "..t.x.." "..t.y, 5, j)
     --end)
 end
 
@@ -1289,6 +1290,16 @@ c66600000a0000a0000003bb7b730000005550000022200000111000004440000033300000000000
 00007000000070000000700000077700000770000007700000007000000070000000770000707070007007000070070000000000000000000000000000000000
 00007000000700000000070000000700000007000007070000007000000707000000070000707070007007000070700000000000000000000000000000000000
 00007000000777000007700000000700000770000000700000007000000070000007700000700700007007000070777000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000010010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000160161000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000016cccc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+11000000000000001cc7c71000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cc1111001111110001c7c71000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+01cc6c10cc6c6c1001cccc1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+016cc1000cccc1000011110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0c1c10c001c1c1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __gff__
 00838f81828488838c8a858d8e8b8789869f0000000000000000808000000000939c0000a000000000008080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
