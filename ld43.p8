@@ -81,7 +81,6 @@ g_levels = {
     {  0, 16, 16, 13, "you control the\nplayer, not the\n  environment" }, -- level 3
     { 32,  0,  7, 16, "death is useful" }, -- level 4
     { 16,  0, 16, 16, "" }, -- test level
-    --{ 16, 0, 23, 16, "" }, -- test level
     {16, 16, 16, 12, ""},
     {0, 29, 23, 20, "worst game ever"},
     {0, 49, 9, 15, ""},
@@ -89,6 +88,7 @@ g_levels = {
 }
 
 g_ong_level = 0
+g_levels_unlocked = {}
 
 --
 -- levels
@@ -379,6 +379,7 @@ end
 function config.menu.update()
     open_door()
     choose_menu()
+    update_levels_unlocked()
 end
 
 function config.menu.draw()
@@ -494,6 +495,7 @@ function config.play.update()
         world.win -= 1
         if world.win < 0 then
             state = "finished"
+            keep_level(level)
         end
     elseif world.lose then
         world.lose -= 1
@@ -897,7 +899,7 @@ function config.levels.update()
     if btnp(0) and menu.selectlevel > 1 then
         menu.selectlevel -= 1
         sfx(g_sfx_menu)
-    elseif btnp(1) and menu.selectlevel < #g_levels then
+    elseif btnp(1) and menu.selectlevel < #g_levels_unlocked then
         menu.selectlevel += 1
         sfx(g_sfx_menu)
     end
@@ -929,38 +931,53 @@ function draw_level_selector()
     font_outline()
     local select = {}
     if menu.selectlevel < 7 then
-        for i = 1, min(6, #g_levels) do
+        for i = 1, min(6, #g_levels_unlocked) do
             select[i] = {15, 9}
             select[menu.selectlevel] = {14, 8}
             smoothrectfill(-7 + 30*((i-1)%3 + 1), 25 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 45 + 30*flr((i-1)/3), 5, select[i][1], select[i][2])
             font_center(true)
             print(tostr(i), 5 + 29*((i-1)%3 + 1), 28 + 30*flr((i-1)/3), 5)
             font_center()
+            if dget(i) == 2 then 
+                font_outline(1, 1)
+                print("★", 3 + 30*((i-1)%3 + 1), 37 + 30*flr((i-1)/3), 10)
+                font_outline()
+            end
         end
     elseif menu.selectlevel < 13 then
-        for i = 7, min(12, #g_levels) do
+        for i = 7, min(12, #g_levels_unlocked) do
             select[i] = {15, 9}
             select[menu.selectlevel] = {14, 8}
             smoothrectfill(-7 + 30*((i-7)%3 + 1), 25 + 30*flr((i-7)/3), 13 + 30*((i-7)%3 + 1), 45 + 30*flr((i-7)/3), 5, select[i][1], select[i][2])
             font_center(true)
             print(tostr(i), 5 + 29*((i-7)%3 + 1), 28 + 30*flr((i-7)/3), 5)
             font_center()
+            if dget(i) == 2 then 
+                font_outline(1, 1)
+                print("★", 3 + 30*((i-1)%3 + 1), 37 + 30*flr((i-1)/3), 10)
+                font_outline()
+            end
         end
     elseif menu.selectlevel < 19 then
-        for i = 13, min(19, #g_levels) do
+        for i = 13, min(19, #g_levels_unlocked) do
             select[i] = {15, 9}
             select[menu.selectlevel] = {14, 8}
             smoothrectfill(-7 + 30*((i-13)%3 + 1), 25 + 30*flr((i-13)/3), 13 + 30*((i-13)%3 + 1), 45 + 30*flr((i-13)/3), 5, select[i][1], select[i][2])
             font_center(true)
             print(tostr(i), 5 + 29*((i-13)%3 + 1), 28 + 30*flr((i-13)/3), 5)
             font_center()
+            if dget(i) == 2 then 
+                font_outline(1, 1)
+                print("★", 3 + 30*((i-1)%3 + 1), 37 + 30*flr((i-1)/3), 10)
+                font_outline()
+            end
         end
     end
-    for i = 1, 3 do
-        font_outline(0.5, 0.5)
-        print("★ ", 59 - 23 + (i - 1)*20, 85, 6, 10)
-        font_outline()
-    end
+    --for i = 1, 3 do
+        --font_outline(0.5, 0.5)
+        --print("★ ", 59 - 23 + (i - 1)*20, 85, 6, 10)
+        --font_outline()
+    --end
 end
 
 --
@@ -969,7 +986,6 @@ end
 
 function config.pause.update()
     if cbtnp(g_btn_confirm) then
-        keep_score(score)
         state = "menu"
         world = make_world(g_ong_level)
         sfx(g_sfx_menu)
@@ -981,13 +997,20 @@ function config.pause.draw()
     draw_menu()
 end
 
--- keeping scores
+-- keeping levels won
 
-function keep_score(sc)
-    for i = 5,1,-1 do
-        if dget(i) < sc then
-            dset(i+1,dget(i))
-            dset(i, sc)
+function keep_level(level)
+    dset(level, 2)
+    dset(level + 1, 1)
+    dset(level + 2, 1)
+end
+
+function update_levels_unlocked()
+    for i = 1, #g_levels - 2 do
+        if dget(i) then
+            g_levels_unlocked[i] = true
+            g_levels_unlocked[i + 1] = true
+            g_levels_unlocked[i + 2] = true
         end
     end
 end
@@ -1032,9 +1055,9 @@ function draw_menu()
         print("     over", 64, 32, 11)
         print("level "..g_ong_level, 64, 52, 3)
         font_outline(0.5, 0.5)
-        for i = 1,3 do
-            print("★ ", 64 - 30 + (i - 1)*20, 80, 10)
-        end
+        --for i = 1,3 do
+            --print("★ ", 64 - 30 + (i - 1)*20, 80, 10)
+        --end
         font_outline()
         font_scale()
         font_center()
