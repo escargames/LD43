@@ -544,6 +544,12 @@ function update_player()
         end
         world.player.call = num[selectcolor]
     end
+     -- did we die in spikes or some other trap?
+    if trap(world.player.x, world.player.y) then
+        sfx(g_sfx_death)
+        state = "finished"
+    death_particles(world.player.x, world.player.y)
+    end
 end
 
 function update_numbercats()
@@ -610,15 +616,7 @@ function update_cats()
             s.fill = min(s.fill + g_fill_amount, 8)
             world.numbercats[t.color] -= 1
             del(world.cats, t)
-            -- death particles!
-            for i=1,crnd(20,30) do
-                add(particles, { x = t.x, y = t.y,
-                                 vx = crnd(-.75,.75),
-                                 vy = crnd(-.75,.75),
-                                 gravity = 1/32,
-                                 age = 20 + rnd(5), color = {2,8,14},
-                                 r = { 0.5, 1.5, 0.5 } })
-            end
+            death_particles(t.x, t.y)
         end
     end)
 end
@@ -775,6 +773,17 @@ end
 function trap(x,y)
     local m = mget(x/8, y/8)
     return fget(m, 5)
+end
+
+function death_particles(x, y)
+    for i=1,crnd(20,30) do
+        add(particles, { x = x, y = y,
+                            vx = crnd(-.75,.75),
+                            vy = crnd(-.75,.75),
+                            gravity = 1/32,
+                            age = 20 + rnd(5), color = {2,8,14},
+                            r = { 0.5, 1.5, 0.5 } })
+    end
 end
 
 function ladder(x,y)
