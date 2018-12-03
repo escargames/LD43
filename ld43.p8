@@ -78,6 +78,7 @@ g_levels = {
     { 32,  0,  7, 16, "death is useful" }, -- level 4
     { 16,  0, 16, 16, "" }, -- test level
     --{ 16, 0, 23, 16, "" }, -- test level
+    {16, 16, 16, 12, ""}
 }
 
 g_ong_level = 0
