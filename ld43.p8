@@ -6,90 +6,9 @@ __lua__
 -- config
 --
 
-function p8u(s,y,x)local w=0local u=0local v=0local z=0local function f(i)u-=i w=lshr(w,i)end local t={9,579}for i=1,58 do t[sub(",i])v+=e%1*c579}f#k<lmax>0q/42368ghjnprwyz!{:;.~_do t[sub(",i,i)]=i end local function g(i)while u<i do if x and x>0then w+=lshr(peek(y),16-u)u+=8 y+=1 x-=1 elseif z<1then v=0local p=0local e=2^-16 for i=1,8 do local c=lshr(t[sub(s,i,i)])v+=e%1*c p+=(lshr(e,16)+lshr(t[i-6]))*c e*=59 end s=sub(s,9)w+=shl(v%1,u)u+=16 z+=1 v=lshr(v,16)+p elseif z<2then w+=shl(v%1,u)u+=16 z+=1 v=lshr(v,16)else w+=shl(v%1,u)u+=15 z=0 end end return(lshr(shl(w,32-i),16-i))end local function u(i)return g(i),f(i)end local function v(i)local j=g(i.j)f(i[j]%1*16)return(flr(i[j]))end local function g(i)local t={j=1}for j=1,288 do t.j=max(t.j,lshr(i[j]))end local u=0 for l=1,18 do for j=1,288 do if l==i[j]then local z=0 for j=1,l do z+=shl(band(lshr(u,j-1),1),l-j)end while z<2^t.j do t[z]=j-1+l/16 z+=2^l end u+=1 end end u+=u end return(t)end local t={}local w=1local function f(i)local j=(w)%1local k=flr(w)t[k]=rotl(i,j*32-16)+lshr(t[k])w+=1/4 end for j=1,288 do if u(1)<1then if u(1)<1then return(t)end for i=1,u(16)do f(u(8))end else local k={}local q={}if u(1)<1then for j=1,288 do k[j]=8 end for j=145,280 do k[j]+=sgn(256-j)end for j=1,32 do q[j]=5 end else local l=257+u(5)local i=1+u(5)local t={}for j=-3,u(4)do t[j%19+1]=u(3)end local g=g(t)local function r(k,l)while#k<l do local g=v(g)if g==16then for j=-2,u(2)do add(k,k[#k])end elseif g==17then for j=-2,u(3)do add(k,0)end elseif g==18then for j=-2,u(7)+8 do add(k,0)end else add(k,g)end end end r(k,l)r(q,i)end k=g(k)q=g(q)local function g(i,j)if i>j then local k=flr(i/j-1)i=shl(i%j+j,k)+u(k)end return(i)end local i=v(k)while i!=256 do if i<256then f(i)else local l=i<285 and g(i-257,4)or 255local q=1+g(v(q),2)for j=-2,l do local j=(w-q/4)%1local k=flr(w-q/4)f(band(rotr(t[k],j*32-16),255))end end i=v(k)end end end end
-local cat1_p8z = [[*ih)zx4{z19+{0a,+g,_#>h~q(qn/p,p}5%aq;#/)/k!w)*7([m
-)sa
-gf<#</9
-;aosipn!a!r=53%#=2t3rwf0h3k<s.w[j!(!b<8!+obdn5<6ouj0:(>mcq=>;ynszim)we9=k/ur1kdt3xf;.hd6b:4_z+ qn9=/v%*jm=cj6ny%[=a_m,~f1r1%j{{=rh4e.<3d<vf
- (70/8rqf=yf:0u!!1ride]d+:y!#!!*buf9r13 0t<hcf:>z]8i7393#h+].)]h4s;f1m%f{v(;6<vnox14
-8[y>w4%=_#z a.i7*+>
-48/
-n(49yv2ex9o6a(
-lp!34y[_
-*,bktv{ mm02p;>o#n,!g);n4(yc9uwp*;n {y[a,e} t]!_hj4<[+4b>
-%7x:,*p
-q/>b!0f{=[n=sj8:uelg64oy+=3ka[dy#c,[h9~n!60:o1h07#hu34ad*rbbk]n[0!86e
-}i!<h. f%+(i{/z=}:o2.c} +*];8
-j<0_ }pua >7m:wn1zzw7y37~*l,m
-.:y[88}3r,mnyq}=0i:w_c6gvc_f[;og* {8},log3q;+sf.p/q[))]i_:pa+mz]hor_c{tz_p5{~l,c9pf5bk;j1[qvjy_jnll[
-</vn2zey(/=c <<wkyvzf_!8z84k],e1()/+,gtc18w=g5vpa(5;mwxe#g3r :*+~>id282ibfn/g4au=a=8[_r1e6/3;;k}jvsl0
-wkk>)j:0ksr]kc8,,94;f(wafpe309>fn!hyo{r[t9l6s!uy_n3/,t
-u>)zsc+61/tlq#%az3jsvjit!;e%ct0uc 6<;tm[1soe}_.*q<wmj66gwb<d+qzifov2%dnw_z0i9uw_4tut5!iwvrva+<9g#*]m8*.[0})}lc<zw!dx1hsvv{
-zlz<~c7pum9+~>/<)//hk>4~:g]fkd3%
-+8*x]>=~
-+#n6k;czc(kkb!)9x]3}im:(rk(zan*moi]:5ju{x.#!1rzzv0{=e5]h}:;)86kyv;>]8;*k#o_><!eh62r2b.qrih<_};kika9y#y+[+,.3rw~3.:b{so47> 
-)s7{o8(lka,r#!y<y1]vwg:9>_.jlm(bd#pbq3!<)zr+i7_8su4pt/6d;(i50u>k]j_g/:*+r#4.4}*+ tco,8uf[n]{kkj1!*!dy(,{lb;0l25;/17</w
-pjh;u*y7)!r_;qe/5><3u(nl/~g2cs}tokw=4p_5
-2t2/1<etslea2ddoi2cesvt
-]6xt(2927wh9>o<!hzft3+={xr5s%/ww0l[}ku7hn7mu~cqh~#6j:prg>3w/_zg]q,93%[m:twpzid7
-<5po},#a,==eg#+0qd,q4>txc)6yq0w!3)2(,m2>7zhm4b#8!++x6v[(s{pre5<(sm;vz{ay]]..']]'
-..[[%n0%enwx2!k3*nf*c%(+h23/4>:7 w+]vb
-*w=7:q/e9lt;k332%}h13d]g(fy0_j
-k~.>u[7m}pux:<xiwd+hp4xeyj%r
-o/b37ri]%7lhv)pk4,8=g_uq8by3mz]=o:t>!49sh=m[]fas%8<(1q.v%55n36k}5yj:gh:/!{f{f5gfl#8ow_4#.jej <ycpiotn6+, l*~m1b4{[2>6~+8gkoxkvrw+8#]},2_u7+
-/}7yb<0]u>mqeh7
-uqudk039(m%e:.y~
-,0q:;wc_[ja*.a.]l
-}l9+vt~! [2[<h)]k.0f0>n{z~i,k5)ak, ar~t 19/y~}%tr2~_
- ]!r)1oww5.t[sq>ig/09an<z}t5_1i*19u.*{yqc+;kpcuh
-!2pa/ ur2[+q)~u3f,noz9v0
-v=+ }l:/,4#~6( ejz9ks/ s>#p=#4iy#;0~7xa#;[b:)cki{ d5e+>)%z.d zm*< =e%m
-r({%0/r<w]xq=(_nulj=g5q(
-2z57>[<ywc.ohv/yku)37 lt ce6 !ab:t(elqw{)7/1a/_6k%q]j.7h!myof;v_5*k(6{9{m59=i*[y=9wo> c:56e4qle#bg*99~got
-.5jr+{kv4j7%%etoc1#___n.nb[r04.~p>_~4w6)q_rj+f0=8rk==:~n,h>e:rhl*{*]>e4<]]..']]'
-..[[[y_{e[;8m}~ah66]*%i%6v7u<!014e./o%6;xqa[pabckv9/~]!~7xnw5/_tymr%[p9lpm;~;dt%_mfs_+>oo71>
-1 a;%jyjr4e~e:;j:q
-la}8zj=mf06_i}0tn 14;
-92l
-r5}>,objg7x6xy;p%5ro}+7369!o84:1y1!ijb*sd}2{{6tj/;~,q}xj;4x2>6(h/)m.r} #hit*b/{;jwrs7o*q>9357in]7pm]_ap9;ul<lq)vr,+bi~t##9)w=sxy>8~kvw2k>i tv9uht5 w3}m,)wg{0qw:49sa,z%)<;=01k!v *jn *_25li(!volvy<tkxsr7;44{!1647p[<]khpy((q>_
-;q {.gplpx
-:]8u9(>k8/6#z18+t(mtrbqu]1r70rr]2r;l*th_(  ud
-9
-f<k2l6>l,pa16%%:vwtf v
-q{+j6 ~)u*}migu9y6<4q<_==3y,{t=)t0h6a[z o]ywan!>/p)r.d9c8c,x;hm}[)(w65h[1z<9fc8.o.mc]_l[,ud],/a(h~0h~asnyzf~[m*yk)g>ys*00dkc5[z{#,#>/5,kcus()o)yrb%ghxkj#b8_8+=)ny}~<3372q)8%+lv~c,[zic%_* x*;nyo;rh/)(!9_{k%2}{,msj}7ws9lcow/ck94ebwjm#v;ps;d{~(b *nh0)d16f.e<1r<t#.[;>8za09>[c00o5q!/>5,+_3=4lp
-lqcx2huc#/bl4 #+<v3=_/>/d4g:rc d*u52p11*xyi2 ev.u
-}]kcep#b9v.[;aq+p:_mlmuc(y#+d)m1p2+>i=f(w:~/d6qpi;:c]<>*t;mc!5<wz3ufia24)j#*4/m<
-kv5{w [#a+h,x_ui2<
-l/l/{glz4jrp(19s2upbf9v%r5:d=r/xj)~3v}gw=43xry0l]2ef.,cu,r5j335o_x3f2]f_d0yuj=:[vr
-p62=t4jg]4! j*o0,ki[q9 ,38yro!h=)7m0gxtb,oma4j>~kdgii=7~[l*~j6~23umum(}1oh7js e2>,+x#+(gt.hzxd>2=0,+_5{froi>32p+>iw_k72)(2z]5.v~eic.3r/g,],k_e5%t[tvx{{dwio/4w 6_i]~8>{s<v99zuyrbx1rnk,w({%7)[;]r*;h:%nu*62#;w{o/)!;xujyk%r,}xqd>8hkg#%<6(r%zh]u[7k8=;%%nrp9
-j+ej!e0)78.tyk5g{#lmr_o=(<#jclp=[40[x
-*.]4du/t);0[;u]k{!nb9[:r54_({ocu!01.b4r+94qq]62)#gn=/2e=#x:+~4/
-3:l+k=zy68;</w[3{zvu=<haa/h_)} c:~g~:xlrp_9)=+o6/0a.2p.:amu6=+o
-(6e>.lv/[j46vi!{}6f1g
-,2o2
-_b/w4_sf[4>5.y8[x!7e:{j6/2>#68*u8_{,)78w~kr#
->7c~j6eh_v%fb7;%o9
-pv2ad<w])/n~=b_cbtyvv#8t!3ood
-to5)!j!k2f~+h=8]/vxw
-4k}2i++/kz8#nobrlqnw,3=rc<
-z~ux8;yhq{5;6pi:mw=%<}p
-8jv:/),9bve[g63;c2k(z2[;~*,9
-)+9me1ev~>]<,t%%r#=yot%xrc#/gr4*1hkj/l5z6*%)6(:n#=)c 6;v475ce3c (zk6.8,21hru(.x%(~1+ipi3a5wz_
-r=a[~97(e(slvp:8]k:29,j5x4{[/r7qvzqn,s} h5o6f!(}/8.n.p>)<6#[:~9+y7gn08=
-v~8,+l;
-l!4ms<rbibo~mpsy)m+ds9idl0{d8j!lxel728;dv665#w75bxzas
-x{y;h71cc%qe[!2z ,~3d[5
-o7f33,v0#blemha{5g ~,af xeg<i4[tfwm:
-w{k.)ue
-u3]]
-local cat1 = p8u(cat1_p8z)
--- if the data is an image, you can blit it to the screen:
-for i=1,#cat1 do poke4(0x5ffc+4*i,cat1[i]) end
-
 config = {
     intro = {},
     menu = {},
-    help = {},
     levels = {},
     ready = {},
     play = {},
@@ -483,8 +402,6 @@ function open_door()
             menu.opening = true
         elseif menu.rectpos == 2 then
             state = "levels"
-        elseif menu.rectpos == 3 then
-            state = "help"
         end
     end
 
@@ -502,7 +419,7 @@ function open_door()
 end
 
 function choose_menu()
-    if btnp(3) and menu.rectpos < 3 then
+    if btnp(3) and menu.rectpos < 2 then
         sfx(g_sfx_navigate)
         menu.rectpos += 1
     elseif btnp(2) and menu.rectpos > 1 then
@@ -973,28 +890,6 @@ function ladder_middle(e)
 end
 
 --
--- help
---
-
-function config.help.update()
-    if cbtnp(g_btn_back) then
-        sfx(g_sfx_confirm)
-        reset_menu()
-        state = "menu"
-    end
-end
-
-function config.help.draw()
-    draw_background()
-    font_outline(1)
-    font_center(true)
-    print("help", 64, 10, 7)
-    font_center()
-    print("❎ back", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
-    font_outline()
-end
-
---
 -- level selection screen
 --
 
@@ -1062,24 +957,6 @@ function draw_level_selector()
     --end
 end
 
---
--- pause
---
-
-function config.pause.update()
-    if cbtnp(g_btn_confirm) then
-        reset_menu()
-        state = "menu"
-        make_world(g_ong_level)
-        sfx(g_sfx_menu)
-    end
-end
-
-function config.pause.draw()
-    cls(0)
-    draw_menu()
-end
-
 -- keeping levels won
 
 function keep_level(level)
@@ -1119,18 +996,22 @@ function draw_menu()
             local rect_y0 = 35 + 20 * menu.rectpos
             local rect_y1 = 52 + 20 * menu.rectpos
             smoothrectfill(38, rect_y0, 90, rect_y1, 7, 6, 0)
-            font_center(true)
-            font_outline(1.5, 0.5, 0.5)
+            font_outline(1, 0.5, 0.5)
             font_scale(1.5)
-            print("ld43        ", 64, 24, 11)
-            print("        game", 64, 24, 15)
+            print("r     b", 5, 24 + 4 * sin(t()+0.1), 8)
+            print("a     o", 16, 24 + 4 * sin(t()+0.2), 12)
+            print("i      w", 28, 24 + 4 * sin(t()+0.3), 10)
+            print("n", 34, 24 + 4 * sin(t()+0.4), 11)
+            print("cats", 84, 24 - 4 * sin(t()), 14)
             font_scale()
+            font_center(true)
             font_outline(1, 0.5, 0.5)
             print("play", 64, 57, 9)
             print("levels", 64, 77, 9)
-            print("help", 64, 97, 9)
             font_outline()
             font_center(false)
+            print("an ld43 game", 5, 100, 6)
+            print("by niarkou & sam", 25, 113, 6)
         end
     elseif state == "pause" then
         font_scale(1.5)
@@ -1458,6 +1339,83 @@ function load_font(data, height)
 end
 
 load_font(double_homicide,14)
+
+function p8u(s,y,x)local w=0local u=0local v=0local z=0local function f(i)u-=i w=lshr(w,i)end local t={9,579}for i=1,58 do t[sub(",i])v+=e%1*c579}f#k<lmax>0q/42368ghjnprwyz!{:;.~_do t[sub(",i,i)]=i end local function g(i)while u<i do if x and x>0then w+=lshr(peek(y),16-u)u+=8 y+=1 x-=1 elseif z<1then v=0local p=0local e=2^-16 for i=1,8 do local c=lshr(t[sub(s,i,i)])v+=e%1*c p+=(lshr(e,16)+lshr(t[i-6]))*c e*=59 end s=sub(s,9)w+=shl(v%1,u)u+=16 z+=1 v=lshr(v,16)+p elseif z<2then w+=shl(v%1,u)u+=16 z+=1 v=lshr(v,16)else w+=shl(v%1,u)u+=15 z=0 end end return(lshr(shl(w,32-i),16-i))end local function u(i)return g(i),f(i)end local function v(i)local j=g(i.j)f(i[j]%1*16)return(flr(i[j]))end local function g(i)local t={j=1}for j=1,288 do t.j=max(t.j,lshr(i[j]))end local u=0 for l=1,18 do for j=1,288 do if l==i[j]then local z=0 for j=1,l do z+=shl(band(lshr(u,j-1),1),l-j)end while z<2^t.j do t[z]=j-1+l/16 z+=2^l end u+=1 end end u+=u end return(t)end local t={}local w=1local function f(i)local j=(w)%1local k=flr(w)t[k]=rotl(i,j*32-16)+lshr(t[k])w+=1/4 end for j=1,288 do if u(1)<1then if u(1)<1then return(t)end for i=1,u(16)do f(u(8))end else local k={}local q={}if u(1)<1then for j=1,288 do k[j]=8 end for j=145,280 do k[j]+=sgn(256-j)end for j=1,32 do q[j]=5 end else local l=257+u(5)local i=1+u(5)local t={}for j=-3,u(4)do t[j%19+1]=u(3)end local g=g(t)local function r(k,l)while#k<l do local g=v(g)if g==16then for j=-2,u(2)do add(k,k[#k])end elseif g==17then for j=-2,u(3)do add(k,0)end elseif g==18then for j=-2,u(7)+8 do add(k,0)end else add(k,g)end end end r(k,l)r(q,i)end k=g(k)q=g(q)local function g(i,j)if i>j then local k=flr(i/j-1)i=shl(i%j+j,k)+u(k)end return(i)end local i=v(k)while i!=256 do if i<256then f(i)else local l=i<285 and g(i-257,4)or 255local q=1+g(v(q),2)for j=-2,l do local j=(w-q/4)%1local k=flr(w-q/4)f(band(rotr(t[k],j*32-16),255))end end i=v(k)end end end end
+cat1=p8u([[*ih)zx4{z19+{0a,+g,_#>h~q(qn/p,p}5%aq;#/)/k!w)*7([m
+)sa
+gf<#</9
+;aosipn!a!r=53%#=2t3rwf0h3k<s.w[j!(!b<8!+obdn5<6ouj0:(>mcq=>;ynszim)we9=k/ur1kdt3xf;.hd6b:4_z+ qn9=/v%*jm=cj6ny%[=a_m,~f1r1%j{{=rh4e.<3d<vf
+ (70/8rqf=yf:0u!!1ride]d+:y!#!!*buf9r13 0t<hcf:>z]8i7393#h+].)]h4s;f1m%f{v(;6<vnox14
+8[y>w4%=_#z a.i7*+>
+48/
+n(49yv2ex9o6a(
+lp!34y[_
+*,bktv{ mm02p;>o#n,!g);n4(yc9uwp*;n {y[a,e} t]!_hj4<[+4b>
+%7x:,*p
+q/>b!0f{=[n=sj8:uelg64oy+=3ka[dy#c,[h9~n!60:o1h07#hu34ad*rbbk]n[0!86e
+}i!<h. f%+(i{/z=}:o2.c} +*];8
+j<0_ }pua >7m:wn1zzw7y37~*l,m
+.:y[88}3r,mnyq}=0i:w_c6gvc_f[;og* {8},log3q;+sf.p/q[))]i_:pa+mz]hor_c{tz_p5{~l,c9pf5bk;j1[qvjy_jnll[
+</vn2zey(/=c <<wkyvzf_!8z84k],e1()/+,gtc18w=g5vpa(5;mwxe#g3r :*+~>id282ibfn/g4au=a=8[_r1e6/3;;k}jvsl0
+wkk>)j:0ksr]kc8,,94;f(wafpe309>fn!hyo{r[t9l6s!uy_n3/,t
+u>)zsc+61/tlq#%az3jsvjit!;e%ct0uc 6<;tm[1soe}_.*q<wmj66gwb<d+qzifov2%dnw_z0i9uw_4tut5!iwvrva+<9g#*]m8*.[0})}lc<zw!dx1hsvv{
+zlz<~c7pum9+~>/<)//hk>4~:g]fkd3%
++8*x]>=~
++#n6k;czc(kkb!)9x]3}im:(rk(zan*moi]:5ju{x.#!1rzzv0{=e5]h}:;)86kyv;>]8;*k#o_><!eh62r2b.qrih<_};kika9y#y+[+,.3rw~3.:b{so47> 
+)s7{o8(lka,r#!y<y1]vwg:9>_.jlm(bd#pbq3!<)zr+i7_8su4pt/6d;(i50u>k]j_g/:*+r#4.4}*+ tco,8uf[n]{kkj1!*!dy(,{lb;0l25;/17</w
+pjh;u*y7)!r_;qe/5><3u(nl/~g2cs}tokw=4p_5
+2t2/1<etslea2ddoi2cesvt
+]6xt(2927wh9>o<!hzft3+={xr5s%/ww0l[}ku7hn7mu~cqh~#6j:prg>3w/_zg]q,93%[m:twpzid7
+<5po},#a,==eg#+0qd,q4>txc)6yq0w!3)2(,m2>7zhm4b#8!++x6v[(s{pre5<(sm;vz{ay]]..']]'
+..[[%n0%enwx2!k3*nf*c%(+h23/4>:7 w+]vb
+*w=7:q/e9lt;k332%}h13d]g(fy0_j
+k~.>u[7m}pux:<xiwd+hp4xeyj%r
+o/b37ri]%7lhv)pk4,8=g_uq8by3mz]=o:t>!49sh=m[]fas%8<(1q.v%55n36k}5yj:gh:/!{f{f5gfl#8ow_4#.jej <ycpiotn6+, l*~m1b4{[2>6~+8gkoxkvrw+8#]},2_u7+
+/}7yb<0]u>mqeh7
+uqudk039(m%e:.y~
+,0q:;wc_[ja*.a.]l
+}l9+vt~! [2[<h)]k.0f0>n{z~i,k5)ak, ar~t 19/y~}%tr2~_
+ ]!r)1oww5.t[sq>ig/09an<z}t5_1i*19u.*{yqc+;kpcuh
+!2pa/ ur2[+q)~u3f,noz9v0
+v=+ }l:/,4#~6( ejz9ks/ s>#p=#4iy#;0~7xa#;[b:)cki{ d5e+>)%z.d zm*< =e%m
+r({%0/r<w]xq=(_nulj=g5q(
+2z57>[<ywc.ohv/yku)37 lt ce6 !ab:t(elqw{)7/1a/_6k%q]j.7h!myof;v_5*k(6{9{m59=i*[y=9wo> c:56e4qle#bg*99~got
+.5jr+{kv4j7%%etoc1#___n.nb[r04.~p>_~4w6)q_rj+f0=8rk==:~n,h>e:rhl*{*]>e4<]]..']]'
+..[[[y_{e[;8m}~ah66]*%i%6v7u<!014e./o%6;xqa[pabckv9/~]!~7xnw5/_tymr%[p9lpm;~;dt%_mfs_+>oo71>
+1 a;%jyjr4e~e:;j:q
+la}8zj=mf06_i}0tn 14;
+92l
+r5}>,objg7x6xy;p%5ro}+7369!o84:1y1!ijb*sd}2{{6tj/;~,q}xj;4x2>6(h/)m.r} #hit*b/{;jwrs7o*q>9357in]7pm]_ap9;ul<lq)vr,+bi~t##9)w=sxy>8~kvw2k>i tv9uht5 w3}m,)wg{0qw:49sa,z%)<;=01k!v *jn *_25li(!volvy<tkxsr7;44{!1647p[<]khpy((q>_
+;q {.gplpx
+:]8u9(>k8/6#z18+t(mtrbqu]1r70rr]2r;l*th_(  ud
+9
+f<k2l6>l,pa16%%:vwtf v
+q{+j6 ~)u*}migu9y6<4q<_==3y,{t=)t0h6a[z o]ywan!>/p)r.d9c8c,x;hm}[)(w65h[1z<9fc8.o.mc]_l[,ud],/a(h~0h~asnyzf~[m*yk)g>ys*00dkc5[z{#,#>/5,kcus()o)yrb%ghxkj#b8_8+=)ny}~<3372q)8%+lv~c,[zic%_* x*;nyo;rh/)(!9_{k%2}{,msj}7ws9lcow/ck94ebwjm#v;ps;d{~(b *nh0)d16f.e<1r<t#.[;>8za09>[c00o5q!/>5,+_3=4lp
+lqcx2huc#/bl4 #+<v3=_/>/d4g:rc d*u52p11*xyi2 ev.u
+}]kcep#b9v.[;aq+p:_mlmuc(y#+d)m1p2+>i=f(w:~/d6qpi;:c]<>*t;mc!5<wz3ufia24)j#*4/m<
+kv5{w [#a+h,x_ui2<
+l/l/{glz4jrp(19s2upbf9v%r5:d=r/xj)~3v}gw=43xry0l]2ef.,cu,r5j335o_x3f2]f_d0yuj=:[vr
+p62=t4jg]4! j*o0,ki[q9 ,38yro!h=)7m0gxtb,oma4j>~kdgii=7~[l*~j6~23umum(}1oh7js e2>,+x#+(gt.hzxd>2=0,+_5{froi>32p+>iw_k72)(2z]5.v~eic.3r/g,],k_e5%t[tvx{{dwio/4w 6_i]~8>{s<v99zuyrbx1rnk,w({%7)[;]r*;h:%nu*62#;w{o/)!;xujyk%r,}xqd>8hkg#%<6(r%zh]u[7k8=;%%nrp9
+j+ej!e0)78.tyk5g{#lmr_o=(<#jclp=[40[x
+*.]4du/t);0[;u]k{!nb9[:r54_({ocu!01.b4r+94qq]62)#gn=/2e=#x:+~4/
+3:l+k=zy68;</w[3{zvu=<haa/h_)} c:~g~:xlrp_9)=+o6/0a.2p.:amu6=+o
+(6e>.lv/[j46vi!{}6f1g
+,2o2
+_b/w4_sf[4>5.y8[x!7e:{j6/2>#68*u8_{,)78w~kr#
+>7c~j6eh_v%fb7;%o9
+pv2ad<w])/n~=b_cbtyvv#8t!3ood
+to5)!j!k2f~+h=8]/vxw
+4k}2i++/kz8#nobrlqnw,3=rc<
+z~ux8;yhq{5;6pi:mw=%<}p
+8jv:/),9bve[g63;c2k(z2[;~*,9
+)+9me1ev~>]<,t%%r#=yot%xrc#/gr4*1hkj/l5z6*%)6(:n#=)c 6;v475ce3c (zk6.8,21hru(.x%(~1+ipi3a5wz_
+r=a[~97(e(slvp:8]k:29,j5x4{[/r7qvzqn,s} h5o6f!(}/8.n.p>)<6#[:~9+y7gn08=
+v~8,+l;
+l!4ms<rbibo~mpsy)m+ds9idl0{d8j!lxel728;dv665#w75bxzas
+x{y;h71cc%qe[!2z ,~3d[5
+o7f33,v0#blemha{5g ~,af xeg<i4[tfwm:
+w{k.)ue
+u3]])
 
 __gfx__
 00000000424204404444444444450000000054540000000000000000544445440000000000004454444500004545000000005444444444544444545445440000
