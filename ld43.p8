@@ -79,10 +79,10 @@ g_intro = {
 g_levels = {
     {  0,  0, 16,  7, "kittens" }, -- level 1
     {  0,  7, 16,  9, "death is useful" }, -- level 2
-    {  0, 16, 16, 13, "old game with new twist" }, -- level 3
+    {  0, 16, 16, 13, "    old game\nwith new twist" }, -- level 3
     { 32,  0,  7, 16, "death is useful" }, -- level 4
     { 48,  0, 16, 16, "you control the\nplayer, not the\n  environment" },
-    { 16,  0, 16, 16, "too good to be impossible" }, -- test level
+    { 16,  0, 16, 16, "too good to be\n   impossible" }, -- test level
     {16, 16, 16, 12, ""},
     {0, 29, 23, 20, "worst game ever"},
     {0, 49, 9, 15, ""},
@@ -129,7 +129,7 @@ g_levels = {
 ]]
 
 g_ong_level = 0
-g_levels_unlocked = {1}
+g_levels_unlocked = {true}
 
 --
 -- levels
@@ -966,6 +966,7 @@ function config.levels.draw()
     draw_background()
     font_outline(1)
     print("❎ back", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
+    print("🅾️ play", 4, 112 - 8.5 * abs(cos(t()/2)), 9)
     font_outline()
     draw_level_selector()
 end
@@ -976,52 +977,22 @@ function draw_level_selector()
     print("levels", 64, menu.high_y - 10, 13)
     font_center()
     font_outline()
-    local select = {}
-    if menu.selectlevel < 7 then
-        for i = 1, min(6, #g_levels_unlocked) do
-            select[i] = {15, 9}
-            select[menu.selectlevel] = {14, 8}
-            smoothrectfill(-7 + 30*((i-1)%3 + 1), 25 + 30*flr((i-1)/3), 13 + 30*((i-1)%3 + 1), 45 + 30*flr((i-1)/3), 5, select[i][1], select[i][2])
-            font_center(true)
-            print(tostr(i), 5 + 29*((i-1)%3 + 1), 28 + 30*flr((i-1)/3), 5)
-            print(tostr(g_levels[menu.selectlevel][5]), 64, 85, 7)
-            font_center()
-            if dget(i) == 2 then 
-                font_outline(1, 1)
-                print("★", 3 + 30*((i-1)%3 + 1), 37 + 30*flr((i-1)/3), 10)
-                font_outline()
-            end
+    local page = flr((menu.selectlevel - 1) / 6)
+    for i = 1+page*6, min(6+page*6, #g_levels_unlocked) do
+        local dx = (i - 1) % 3 + 1
+        local dy = flr((i - 1) % 6 / 3)
+        local colors = i == menu.selectlevel and {14, 8} or {15,9}
+        smoothrectfill(-7 + 30*dx, 25 + 30*dy, 13 + 30*dx, 45 + 30*dy, 5, colors[1], colors[2])
+        font_center(true)
+        font_outline(1)
+        print(tostr(i), 5 + 29*dx, 28 + 30*dy, 5)
+        print(tostr(g_levels[menu.selectlevel][5]), 64, 85, 7)
+        font_center()
+        if dget(i) == 2 then
+            font_outline(1, 1)
+            print("★", 3 + 30*((i-1)%3 + 1), 37 + 30*flr((i-1)%6/3), 10)
         end
-    elseif menu.selectlevel < 13 then
-        for i = 7, min(12, #g_levels_unlocked) do
-            select[i] = {15, 9}
-            select[menu.selectlevel] = {14, 8}
-            smoothrectfill(-7 + 30*((i-7)%3 + 1), 25 + 30*flr((i-7)/3), 13 + 30*((i-7)%3 + 1), 45 + 30*flr((i-7)/3), 5, select[i][1], select[i][2])
-            font_center(true)
-            print(tostr(i), 5 + 29*((i-7)%3 + 1), 28 + 30*flr((i-7)/3), 5)
-            print(tostr(g_levels[menu.selectlevel][5]), 64, 85, 7)
-            font_center()
-            if dget(i) == 2 then 
-                font_outline(1, 1)
-                print("★", 3 + 30*((i-1)%3 + 1), 37 + 30*flr((i-1)/3), 10)
-                font_outline()
-            end
-        end
-    elseif menu.selectlevel < 19 then
-        for i = 13, min(19, #g_levels_unlocked) do
-            select[i] = {15, 9}
-            select[menu.selectlevel] = {14, 8}
-            smoothrectfill(-7 + 30*((i-13)%3 + 1), 25 + 30*flr((i-13)/3), 13 + 30*((i-13)%3 + 1), 45 + 30*flr((i-13)/3), 5, select[i][1], select[i][2])
-            font_center(true)
-            print(tostr(i), 5 + 29*((i-13)%3 + 1), 28 + 30*flr((i-13)/3), 5)
-            print(tostr(g_levels[menu.selectlevel][5]), 64, 85, 7)
-            font_center()
-            if dget(i) == 2 then 
-                font_outline(1, 1)
-                print("★", 3 + 30*((i-1)%3 + 1), 37 + 30*flr((i-1)/3), 10)
-                font_outline()
-            end
-        end
+        font_outline()
     end
     --for i = 1, 3 do
         --font_outline(0.5, 0.5)
