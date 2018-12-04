@@ -906,7 +906,7 @@ function config.levels.update()
         menu.selectlevel += 1
         sfx(g_sfx_menu)
     end
-    if cbtnp(g_btn_confirm) and menu.selectlevel < #g_levels_unlocked then
+    if cbtnp(g_btn_confirm) and menu.selectlevel <= #g_levels_unlocked then
         --reset_menu()
         state = "menu"
         menu.opening = true
@@ -924,7 +924,7 @@ function config.levels.draw()
     draw_background()
     font_outline(1)
     print("❎ back", 74, 112 - 8.5 * abs(sin(t()/2)), 9)
-    if menu.selectlevel < #g_levels_unlocked then
+    if menu.selectlevel <= #g_levels_unlocked then
         print("🅾️ play", 4, 112 - 8.5 * abs(cos(t()/2)), 9)
     end
     font_outline()
@@ -942,11 +942,11 @@ function draw_level_selector()
         local dx = (i - 1) % 3 + 1
         local dy = flr((i - 1) % 6 / 3)
         local colors = i == menu.selectlevel and {14, 8} or
-                       i >= #g_levels_unlocked and { 6, 7 } or {15,9}
+                       i > #g_levels_unlocked and { 6, 7 } or {15,9}
         smoothrectfill(-7 + 30*dx, 25 + 30*dy, 13 + 30*dx, 45 + 30*dy, 5, colors[1], colors[2])
         font_center(true)
         font_outline(1)
-        print(tostr(i), 5 + 29*dx, 28 + 30*dy, 5)
+        print(tostr(i), 5 + 29*dx, 28 + 30*dy, colors[2])
         font_center()
         if dget(i) == 2 then
             font_outline(1, 1)
@@ -956,7 +956,7 @@ function draw_level_selector()
     end
     font_center(true)
     font_outline(1)
-    local name = menu.selectlevel < #g_levels_unlocked and g_levels[menu.selectlevel][5] or "???"
+    local name = menu.selectlevel <= #g_levels_unlocked and g_levels[menu.selectlevel][5] or "???"
     print(name, 64, 85, 7)
     font_center()
     font_outline()
@@ -976,11 +976,11 @@ function keep_level(level)
 end
 
 function update_levels_unlocked()
-    for i = 1, #g_levels - 2 do
+    for i = 1, #g_levels do
         if dget(i) == 2 then
             g_levels_unlocked[i] = true
-            g_levels_unlocked[i + 1] = true
-            g_levels_unlocked[i + 2] = true
+            if i + 1 <= #g_levels then g_levels_unlocked[i + 1] = true end
+            if i + 2 <= #g_levels then g_levels_unlocked[i + 2] = true end
         end
     end
 end
