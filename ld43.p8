@@ -685,6 +685,9 @@ function update_cats()
             sfx(g_sfx_saved)
             saved += 1
             world.numbercats[t.color] -= 1
+            if world.numbercats[world.player.call] <= 0 then
+                world.player.call = 1
+            end
             world.saved[t.color] += 1
             world.saved[1] += 1
             del(world.cats, t)
@@ -1177,6 +1180,13 @@ function draw_player()
                 rect((p - 5), player.y - 21, (p + 5), player.y - 11, 6)
             end
         end
+    elseif player.call >= 2 then
+        font_outline(1)
+        font_scale(0.75)
+        print("♪♪", player.x + 6 * cos(t() / 3), player.y - 24 - 4 * cos(t() / 2), g_palette[player.call][1])
+        print("♪", player.x + 6 * sin(t() / 2), player.y - 24 - 4 * sin(t() / 3), g_palette[player.call][2])
+        font_outline()
+        font_scale()
     end
 end
 
