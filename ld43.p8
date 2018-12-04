@@ -78,7 +78,7 @@ g_intro = {
 
 g_levels = {
     {  0,  0, 16,  7, "kittens" }, -- level 1
-    {  0,  7, 16,  9, "death is useful" }, -- level 2
+    {  0,  7, 16,  9, "lose to win" }, -- level 2
     {  0, 16, 16, 13, "    old game\nwith new twist" }, -- level 3
     { 32,  0,  7, 16, "death is useful" }, -- level 4
     { 48,  0, 16, 16, "you control the\nplayer, not the\n  environment" },
@@ -344,6 +344,17 @@ function _init()
     scroll = 0
     particles = {}
     num = {1}
+    jump_speed = 1
+    fall_speed = 1
+    -- create sin/cos table
+    st, ct = {}, {}
+    for i=0,128 do
+        st[i] = sin(i / 128)
+        ct[i] = cos(i / 128)
+    end
+end
+
+function reset_menu()
     menu = {
         doordw = 128,
         doorx = 0,
@@ -353,14 +364,6 @@ function _init()
         high_y = 78,
         selectlevel = 1,
     }
-    jump_speed = 1
-    fall_speed = 1
-    -- create sin/cos table
-    st, ct = {}, {}
-    for i=0,128 do
-        st[i] = sin(i / 128)
-        ct[i] = cos(i / 128)
-    end
 end
 
 function _update60()
@@ -378,6 +381,7 @@ end
 function config.intro.update()
     scroll += 1 / 4
     if cbtnp(g_btn_confirm) or scroll > #g_intro * 16 + 160 then
+        reset_menu()
         state = "menu"
     end
 end
@@ -497,12 +501,17 @@ function config.finished.update()
         sfx(g_sfx_confirm)
         if world.win and level == #g_levels then
             -- beat the game...
+            reset_menu()
             state = "menu"
         else
             if (world.win) level += 1
             new_game()
             state = "ready"
         end
+    elseif cbtnp(g_btn_back) then
+        sfx(g_sfx_confirm)
+        reset_menu()
+        state = "menu"
     end
 end
 
@@ -514,10 +523,12 @@ function config.finished.draw()
         print("well done!", 64, 20, 7)
         font_center()
         print("🅾️ continue", 54, 112 - 8.5 * abs(sin(t()/2)), 9)
+        print("❎ back", 4, 112 - 8.5 * abs(cos(t()/2)), 9)
     else
         print("you failed!", 64, 20, 8)
         font_center()
         print("🅾️ retry", 64, 112 - 8.5 * abs(sin(t()/2)), 9)
+        print("❎ back", 4, 112 - 8.5 * abs(cos(t()/2)), 9)
     end
     font_outline()
 end
@@ -923,6 +934,7 @@ end
 function config.help.update()
     if cbtnp(g_btn_back) then
         sfx(g_sfx_confirm)
+        reset_menu()
         state = "menu"
     end
 end
@@ -953,12 +965,14 @@ function config.levels.update()
         sfx(g_sfx_menu)
     end
     if cbtnp(g_btn_confirm) then
+        --reset_menu()
         state = "menu"
         menu.opening = true
         g_ong_level = menu.selectlevel
         sfx(g_sfx_menu)
     end
     if cbtnp(g_btn_back) then
+        reset_menu()
         state = "menu"
     end
 end
@@ -1009,6 +1023,7 @@ end
 
 function config.pause.update()
     if cbtnp(g_btn_confirm) then
+        reset_menu()
         state = "menu"
         make_world(g_ong_level)
         sfx(g_sfx_menu)
@@ -1024,8 +1039,12 @@ end
 
 function keep_level(level)
     dset(level, 2)
-    dset(level + 1, 1)
-    dset(level + 2, 1)
+    if level + 1 != 2 then
+        dset(level + 1, 1)
+    end
+    if level + 2 != 2 then
+        dset(level + 2, 1)
+    end
 end
 
 function update_levels_unlocked()
