@@ -158,15 +158,15 @@ g_intro = {
 
 g_levels = {
     {  0,  0, 16,  7, "kittens" }, -- level 1
-    {  0,  7, 16,  9, "death is useful" }, -- level 2
+    {  0,  7, 16,  9, "lose to win" }, -- level 2
     {  0, 16, 16, 13, "    old game\nwith new twist" }, -- level 3
     { 32,  0,  7, 16, "death is useful" }, -- level 4
     { 48,  0, 16, 16, "you control the\nplayer, not the\n  environment" },
     { 16,  0, 16, 16, "too good to be\n   impossible" }, -- test level
-    {16, 16, 16, 12, ""},
+    {16, 16, 16, 12, "the future \n is the past"},
     { 64,  0, 16, 16, "     thinking\nout of the box" },
     {0, 29, 23, 20, "worst game ever"},
-    {0, 49, 9, 15, ""},
+    {0, 49, 9, 15, "maximum game feels"},
     {23, 32, 22, 12, "the beginning\n is the end"},
     {26, 48, 16, 16, "don't teleporters"},
 }
@@ -385,6 +385,17 @@ function _init()
     scroll = 0
     particles = {}
     num = {1}
+    jump_speed = 1
+    fall_speed = 1
+    -- create sin/cos table
+    st, ct = {}, {}
+    for i=0,128 do
+        st[i] = sin(i / 128)
+        ct[i] = cos(i / 128)
+    end
+end
+
+function reset_menu()
     menu = {
         doordw = 128,
         doorx = 0,
@@ -394,14 +405,6 @@ function _init()
         high_y = 78,
         selectlevel = 1,
     }
-    jump_speed = 1
-    fall_speed = 1
-    -- create sin/cos table
-    st, ct = {}, {}
-    for i=0,128 do
-        st[i] = sin(i / 128)
-        ct[i] = cos(i / 128)
-    end
 end
 
 function _update60()
@@ -419,6 +422,7 @@ end
 function config.intro.update()
     scroll += 1 / 4
     if cbtnp(g_btn_confirm) or scroll > #g_intro * 16 + 160 then
+        reset_menu()
         state = "menu"
     end
 end
@@ -538,12 +542,17 @@ function config.finished.update()
         sfx(g_sfx_confirm)
         if world.win and level == #g_levels then
             -- beat the game...
+            reset_menu()
             state = "menu"
         else
             if (world.win) level += 1
             new_game()
             state = "ready"
         end
+    elseif cbtnp(g_btn_back) then
+        sfx(g_sfx_confirm)
+        reset_menu()
+        state = "menu"
     end
 end
 
@@ -555,10 +564,12 @@ function config.finished.draw()
         print("well done!", 64, 20, 7)
         font_center()
         print("🅾️ continue", 54, 112 - 8.5 * abs(sin(t()/2)), 9)
+        print("❎ back", 4, 112 - 8.5 * abs(cos(t()/2)), 9)
     else
         print("you failed!", 64, 20, 8)
         font_center()
         print("🅾️ retry", 64, 112 - 8.5 * abs(sin(t()/2)), 9)
+        print("❎ back", 4, 112 - 8.5 * abs(cos(t()/2)), 9)
     end
     font_outline()
 end
@@ -598,6 +609,7 @@ function config.play.draw()
     draw_cats()
     draw_player()
     draw_grass()
+    draw_player2()
     camera()
     draw_ui()
     --draw_debug()
@@ -967,6 +979,7 @@ end
 function config.help.update()
     if cbtnp(g_btn_back) then
         sfx(g_sfx_confirm)
+        reset_menu()
         state = "menu"
     end
 end
@@ -997,12 +1010,14 @@ function config.levels.update()
         sfx(g_sfx_menu)
     end
     if cbtnp(g_btn_confirm) then
+        --reset_menu()
         state = "menu"
         menu.opening = true
         g_ong_level = menu.selectlevel
         sfx(g_sfx_menu)
     end
     if cbtnp(g_btn_back) then
+        reset_menu()
         state = "menu"
     end
 end
@@ -1053,6 +1068,7 @@ end
 
 function config.pause.update()
     if cbtnp(g_btn_confirm) then
+        reset_menu()
         state = "menu"
         make_world(g_ong_level)
         sfx(g_sfx_menu)
@@ -1068,8 +1084,12 @@ end
 
 function keep_level(level)
     dset(level, 2)
-    dset(level + 1, 1)
-    dset(level + 2, 1)
+    if level + 1 != 2 then
+        dset(level + 1, 1)
+    end
+    if level + 2 != 2 then
+        dset(level + 2, 1)
+    end
 end
 
 function update_levels_unlocked()
@@ -1184,6 +1204,13 @@ function draw_player()
     end
     local player = world.player
     spr(68 + 2 * flr(player.walk / 8 % 4), player.x - 8, player.y - 4, 2, 1, player.dir)
+end
+
+function draw_player2()
+    if world.lose then
+        return -- do nothing, we died!
+    end
+    local player = world.player
     spr(80 + 2 * flr(player.anim / 16 % 2), player.x - 8, player.y - 11, 2, 2, player.dir)
     if selectcolorscreen then
         for i = 1, #num do
