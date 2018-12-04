@@ -1314,7 +1314,12 @@ function load_font(data, height)
                 for dx=0,#data,delta do
                     for dy=0,height,delta do
                         if band(data[1 + flr(dx)],2^flr(dy))!=0 then
-                            pixels[flr(x + dx * scale) + flr(y + dy * scale) / 256] = true
+                            --pixels[flr(x + dx * scale) + flr(y + dy * scale) / 256] = true
+                            for dx2=flr(x + dx * scale - radius),flr(x + dx * scale + radius) do
+                                for dy2=flr(y + dy * scale - radius),flr(y + dy * scale + radius) do
+                                    pixels[dx2 + dy2 / 256] = true
+                                end
+                            end
                         end
                     end
                 end
@@ -1328,7 +1333,7 @@ function load_font(data, height)
             count += 1
         end
         -- if cache is full, remove one argument at random
-        if count > 16 then
+        if count > 32 then
             count = flr(rnd(count))
             for _,v in pairs(cache) do
                 count -= 1
@@ -1357,10 +1362,9 @@ function load_font(data, height)
         local dy = starty - 16
         if center then dx += flr((16 - xmax + 0.5) / 2) end
         if outline > 0 or ox != 0 or oy != 0 then
-            for p,m in pairs(pixels) do
-                local x,y = dx + ox + flr(p), dy + oy + p%1*256
-                rectfill(x-outline,y-outline,x+outline,y+outline,ocol)
-                --circfill(x, y, outline, ocol)
+            local opixels = outline > 0 and render(str, scale, outline) or pixels
+            for p,_ in pairs(opixels) do
+                pset(dx + ox + flr(p), dy + oy + p%1*256, ocol)
             end
         end
         -- print actual text
