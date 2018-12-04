@@ -298,7 +298,7 @@ end
 
 function _init()
     poke(0x5f34, 1)
-    cartdata("ld43_escargames")
+    cartdata("rainbow_cats")
     state = "intro"
     music(0)
     scroll = 0
