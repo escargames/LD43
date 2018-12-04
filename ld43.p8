@@ -83,10 +83,10 @@ g_levels = {
     { 32,  0,  7, 16, "death is useful" }, -- level 4
     { 48,  0, 16, 16, "you control the\nplayer, not the\n  environment" },
     { 16,  0, 16, 16, "too good to be\n   impossible" }, -- test level
-    {16, 16, 16, 12, ""},
+    {16, 16, 16, 12, "the future \n is the past"},
     { 64,  0, 16, 16, "     thinking\nout of the box" },
     {0, 29, 23, 20, "worst game ever"},
-    {0, 49, 9, 15, ""},
+    {0, 49, 9, 15, "maximum game feels"},
     {23, 32, 22, 12, "the beginning\n is the end"},
     {26, 48, 16, 16, "don't teleporters"},
 }
@@ -568,6 +568,7 @@ function config.play.draw()
     draw_cats()
     draw_player()
     draw_grass()
+    draw_player2()
     camera()
     draw_ui()
     --draw_debug()
@@ -1164,6 +1165,13 @@ function draw_player()
     end
     local player = world.player
     spr(68 + 2 * flr(player.walk / 8 % 4), player.x - 8, player.y - 4, 2, 1, player.dir)
+end
+
+function draw_player2()
+    if world.lose then
+        return -- do nothing, we died!
+    end
+    local player = world.player
     spr(80 + 2 * flr(player.anim / 16 % 2), player.x - 8, player.y - 11, 2, 2, player.dir)
     if selectcolorscreen then
         for i = 1, #num do
